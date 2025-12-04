@@ -208,9 +208,8 @@ const BottlePreloader = ({ finishLoading }) => {
         {/* Loading Text */}
         <div className="mt-6 text-center">
            <h2 className="text-xl md:text-2xl font-bold text-pink-900 tracking-[0.2em] uppercase animate-pulse">
-            Blending
+            Brewing Freshness...
            </h2>
-           <p className="text-xs text-pink-500 font-medium mt-1 tracking-wider">Perfecting the texture...</p>
         </div>
       </div>
     </div>
