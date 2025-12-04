@@ -1,103 +1,93 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   Menu, X, Droplet, Heart, Snowflake, Instagram, ArrowRight, 
   ShoppingBag, Send, MapPin, Phone, Mail, Star, CheckCircle2, 
   ArrowUpRight 
 } from 'lucide-react';
 import { FaWhatsapp } from 'react-icons/fa';
+import { motion, useScroll, useTransform } from 'framer-motion';
 
-// --- Custom CSS ---
+// --- CUSTOM STYLES & ANIMATIONS ---
 const customStyles = `
-  /* --- 1. SMOOTH SCROLLING --- */
-  html {
-    scroll-behavior: smooth;
+  html { scroll-behavior: smooth; }
+
+  /* --- BOTTLE & LIQUID ANIMATIONS --- */
+  
+  /* Liquid filling up from bottom */
+  @keyframes rise-liquid {
+    0% { height: 0%; }
+    100% { height: 85%; } 
   }
 
-  /* --- 2. BOTTLE ENTRANCE ANIMATION (NEW) --- */
-  /* This creates a spring-like pop up effect */
-  @keyframes bottle-entry {
-    0% { 
-      opacity: 0; 
-      transform: translateY(100px) rotate(-10deg) scale(0.9); 
-    }
-    100% { 
-      opacity: 1; 
-      transform: translateY(0) rotate(3deg) scale(1); 
-    }
+  /* Gentle wave on top of liquid */
+  @keyframes surface-wobble {
+    0% { transform: skewX(0deg); }
+    25% { transform: skewX(-2deg); }
+    75% { transform: skewX(2deg); }
+    100% { transform: skewX(0deg); }
   }
 
-  /* --- Standard Animations --- */
+  /* Straw Drop Animation - adjusted to land perfectly */
+  @keyframes straw-entry {
+    0% { transform: translateY(-400px) rotate(15deg); opacity: 0; }
+    60% { transform: translateY(10px) rotate(8deg); opacity: 1; } /* Hit bottom */
+    80% { transform: translateY(-15px) rotate(8deg); } /* Bounce up */
+    100% { transform: translateY(0) rotate(8deg); opacity: 1; } /* Settle */
+  }
+
+  /* Bubbles rising in the smoothie */
+  @keyframes speck-rise {
+    0% { transform: translateY(0) scale(1); opacity: 0.8; }
+    100% { transform: translateY(-120px) scale(0); opacity: 0; }
+  }
+
+  /* --- GENERAL UI ANIMATIONS --- */
+  
+  /* Rose Petal Drift (Left to Right) */
+  @keyframes drift {
+    0% { transform: translateX(0) translateY(0) rotate(-5deg); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateX(100vw) translateY(-50px) rotate(360deg); opacity: 0; }
+  }
+
   @keyframes float {
     0% { transform: translateY(0px) rotate(0deg); }
     50% { transform: translateY(-15px) rotate(5deg); }
     100% { transform: translateY(0px) rotate(0deg); }
-  }
-  @keyframes drift {
-    0% { transform: translateX(-10px) translateY(10px) rotate(-5deg); opacity: 0; }
-    50% { opacity: 0.8; }
-    100% { transform: translateX(100vw) translateY(-50px) rotate(360deg); opacity: 0; }
   }
   @keyframes liquid-pulse {
     0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(236, 72, 153, 0.7); }
     70% { transform: scale(1.05); box-shadow: 0 0 0 20px rgba(236, 72, 153, 0); }
     100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(236, 72, 153, 0); }
   }
-  
-  /* Utility Classes */
-  .animate-float { animation: float 6s ease-in-out infinite; }
-  .animate-drift { animation: drift 15s linear infinite; }
-  .animate-liquid-pulse { animation: liquid-pulse 2s infinite; }
-  
-  /* The class for the bottle entrance - waits 0.2s then runs */
-  .animate-bottle-enter {
-    animation: bottle-entry 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-    opacity: 0; /* Hidden initially */
-    animation-delay: 0.2s;
-  }
-
-  .glass-panel {
-    background: rgba(255, 255, 255, 0.25);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.4);
-  }
-  .glass-card {
-    background: linear-gradient(135deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.2) 100%);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255,255,255,0.6);
-    box-shadow: 0 8px 32px 0 rgba(236, 72, 153, 0.1);
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  }
-  /* Enhanced Hover Effect for Product Cards */
-  .glass-card:hover {
-    transform: translateY(-12px) scale(1.02);
-    box-shadow: 0 25px 50px -12px rgba(236, 72, 153, 0.25);
-    border-color: #f9a8d4;
-  }
-  .glass-input {
-    background: rgba(255, 255, 255, 0.5);
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    backdrop-filter: blur(5px);
-    transition: all 0.3s ease;
-  }
-  .glass-input:focus {
-    background: rgba(255, 255, 255, 0.9);
-    border-color: #ec4899;
-    box-shadow: 0 0 0 4px rgba(236, 72, 153, 0.15);
-  }
-  .shimmer-btn {
-    background: linear-gradient(to right, #ec4899 4%, #f472b6 25%, #ec4899 36%);
-    background-size: 1000px 100%;
-    animation: shimmer 3s infinite linear;
+  @keyframes bottle-enter {
+    0% { opacity: 0; transform: translateY(100px) rotate(-10deg) scale(0.9); }
+    100% { opacity: 1; transform: translateY(0) rotate(3deg) scale(1); }
   }
   @keyframes shimmer {
     0% { background-position: -1000px 0; }
     100% { background-position: 1000px 0; }
   }
+
+  /* UTILITY CLASSES */
+  .animate-float { animation: float 6s ease-in-out infinite; }
+  .animate-liquid-pulse { animation: liquid-pulse 2s infinite; }
+  .animate-bottle-enter { animation: bottle-enter 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; opacity: 0; animation-delay: 0.2s; }
+  
+  .shimmer-btn { background: linear-gradient(to right, #ec4899 4%, #f472b6 25%, #ec4899 36%); background-size: 1000px 100%; animation: shimmer 3s infinite linear; }
+  
+  .glass-panel { background: rgba(255, 255, 255, 0.25); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.4); }
+  .glass-card { background: linear-gradient(135deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.2) 100%); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.6); box-shadow: 0 8px 32px 0 rgba(236, 72, 153, 0.1); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+  .glass-card:hover { transform: translateY(-12px) scale(1.02); box-shadow: 0 25px 50px -12px rgba(236, 72, 153, 0.25); border-color: #f9a8d4; }
+  .glass-input { background: rgba(255, 255, 255, 0.5); border: 1px solid rgba(255, 255, 255, 0.5); backdrop-filter: blur(5px); transition: all 0.3s ease; }
+  .glass-input:focus { background: rgba(255, 255, 255, 0.9); border-color: #ec4899; box-shadow: 0 0 0 4px rgba(236, 72, 153, 0.15); }
+  
   .reveal-hidden { opacity: 0; transform: translateY(40px); transition: all 1s ease-out; }
   .reveal-visible { opacity: 1; transform: translateY(0); }
 `;
 
-// --- Hooks ---
+// --- HOOKS ---
 const useScrollReveal = () => {
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
@@ -108,23 +98,130 @@ const useScrollReveal = () => {
         }
       });
     }, { threshold: 0.15 });
-    const hiddenElements = document.querySelectorAll('.reveal-hidden');
-    hiddenElements.forEach((el) => observer.observe(el));
-    return () => hiddenElements.forEach((el) => observer.unobserve(el));
+    document.querySelectorAll('.reveal-hidden').forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
   }, []);
 };
 
-// --- Components ---
-
+// --- HELPER COMPONENT: FLOATING PETAL ---
 const FloatingPetal = ({ delay, duration, size, top }) => (
-  <div className="absolute pointer-events-none z-0 opacity-60" style={{ animation: `drift ${duration}s linear infinite`, animationDelay: `${delay}s`, top: `${top}%`, left: '-10%' }}>
-    <div className={`text-pink-300 transform rotate-45`} style={{ fontSize: `${size}px` }}>🌸</div>
+  <div 
+    className="absolute pointer-events-none z-0 opacity-60" 
+    style={{ 
+      animation: `drift ${duration}s linear infinite`, 
+      animationDelay: `${delay}s`, 
+      top: `${top}%`, 
+      left: '-10%' // Start off-screen left
+    }}
+  >
+    <div className={`text-pink-300 transform rotate-45 drop-shadow-sm`} style={{ fontSize: `${size}px` }}>🌸</div>
   </div>
 );
 
+// --- BOTTLE PRELOADER ---
+const BottlePreloader = ({ finishLoading }) => {
+  useEffect(() => {
+    const timer = setTimeout(() => finishLoading(), 3800);
+    return () => clearTimeout(timer);
+  }, [finishLoading]);
+
+  return (
+    <div className="fixed inset-0 z-[100] bg-pink-50 flex flex-col items-center justify-center overflow-hidden">
+      
+      {/* Background Ambience: RESTORED & ENHANCED PETALS */}
+      <div className="absolute inset-0 pointer-events-none w-full h-full">
+         <FloatingPetal delay={0} duration={6} size={30} top={20} />
+         <FloatingPetal delay={2} duration={8} size={20} top={80} />
+         <FloatingPetal delay={1} duration={7} size={25} top={50} />
+         <FloatingPetal delay={3.5} duration={9} size={15} top={10} />
+         <FloatingPetal delay={0.5} duration={5} size={35} top={65} />
+      </div>
+
+      <div className="relative z-10 flex flex-col items-center mt-8">
+        
+        {/* BOTTLE COMPOSITION CONTAINER */}
+        <div className="relative w-[140px] h-[300px]">
+          
+          {/* STRAW POSITIONING */}
+          <div className="absolute top-[-50px] left-[52%] w-[14px] h-[360px] z-0 rounded-full shadow-sm"
+               style={{
+                 background: 'repeating-linear-gradient(45deg, #fce7f3, #fce7f3 10px, #ec4899 10px, #ec4899 20px)',
+                 boxShadow: 'inset -2px 0 4px rgba(0,0,0,0.1)',
+                 animation: 'straw-entry 1s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
+                 transformOrigin: 'bottom center',
+               }}>
+          </div>
+
+          {/* SVG BOTTLE STRUCTURE */}
+          <svg viewBox="0 0 100 200" className="w-full h-full drop-shadow-2xl z-10 relative overflow-visible">
+            <defs>
+              <path id="bottle-shape" d="M 30 5 L 30 35 Q 30 65 10 85 L 10 185 Q 10 200 50 200 Q 90 200 90 185 L 90 85 Q 70 65 70 35 L 70 5 Z" />
+              <pattern id="specks" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+                <circle cx="2" cy="2" r="1" fill="#be185d" opacity="0.3" />
+              </pattern>
+              <clipPath id="bottle-clip">
+                <use href="#bottle-shape" />
+              </clipPath>
+            </defs>
+
+            {/* A. Background Glass Tint */}
+            <use href="#bottle-shape" fill="rgba(255,255,255,0.2)" />
+
+            {/* B. The Liquid (Masked) */}
+            <g clipPath="url(#bottle-clip)">
+              <foreignObject x="0" y="0" width="100" height="200">
+                <div className="w-full h-full flex flex-col justify-end">
+                   <div className="w-full bg-pink-400 relative"
+                        style={{ animation: 'rise-liquid 2.5s ease-out forwards 0.5s', height: '0%' }}>
+                        
+                        {/* Texture Overlay */}
+                        <div className="absolute inset-0 w-full h-full opacity-60" 
+                             style={{ backgroundImage: 'radial-gradient(#be185d 1px, transparent 1px)', backgroundSize: '12px 12px' }}></div>
+                        
+                        {/* Top Surface */}
+                        <div className="absolute top-0 left-0 w-full h-2 bg-pink-300 opacity-50 blur-[1px]" 
+                             style={{ animation: 'surface-wobble 3s infinite ease-in-out' }}></div>
+
+                        {/* Rising Bubbles */}
+                        <div className="absolute bottom-10 left-4 w-1 h-1 bg-rose-700 rounded-full" style={{ animation: 'speck-rise 4s infinite' }}></div>
+                        <div className="absolute bottom-20 left-12 w-1.5 h-1.5 bg-rose-800 rounded-full" style={{ animation: 'speck-rise 3s infinite 0.5s' }}></div>
+                        <div className="absolute bottom-5 left-16 w-1 h-1 bg-rose-600 rounded-full" style={{ animation: 'speck-rise 5s infinite 1s' }}></div>
+                   </div>
+                </div>
+              </foreignObject>
+            </g>
+
+            {/* C. Glass Reflections & Highlights */}
+            <path d="M 15 90 Q 15 120 15 180" fill="none" stroke="white" strokeWidth="2" opacity="0.4" strokeLinecap="round" />
+            <path d="M 85 90 Q 85 120 85 180" fill="none" stroke="white" strokeWidth="2" opacity="0.2" strokeLinecap="round" />
+            <path d="M 32 10 L 32 30" fill="none" stroke="white" strokeWidth="1.5" opacity="0.5" strokeLinecap="round" />
+            
+            {/* D. Bottle Outline/Rim */}
+            <use href="#bottle-shape" fill="none" stroke="rgba(255,255,255,0.6)" strokeWidth="3" />
+            
+            {/* E. The Thick Rim at Top */}
+            <rect x="25" y="2" width="50" height="8" rx="2" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="3" />
+            <rect x="25" y="2" width="50" height="8" rx="2" fill="rgba(255,255,255,0.2)" />
+          </svg>
+        </div>
+
+        {/* Loading Text */}
+        <div className="mt-6 text-center">
+           <h2 className="text-xl md:text-2xl font-bold text-pink-900 tracking-[0.2em] uppercase animate-pulse">
+            Blending
+           </h2>
+           <p className="text-xs text-pink-500 font-medium mt-1 tracking-wider">Perfecting the texture...</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// --- MAIN COMPONENTS ---
+
 const WaveSeparator = () => (
   <div className="absolute bottom-0 left-0 w-full overflow-hidden leading-[0] rotate-180 z-20">
-    <svg className="relative block w-[calc(100%+1.3px)] h-[80px] md:h-[120px]" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+    <svg className="relative block w-[calc(100%+1.3px)] h-[80px] md:h-[120px]" viewBox="0 0 1200 120" preserveAspectRatio="none">
         <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" className="fill-white"></path>
     </svg>
   </div>
@@ -133,13 +230,11 @@ const WaveSeparator = () => (
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
   return (
     <nav className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'glass-panel py-3 shadow-sm' : 'bg-transparent py-6'}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -149,15 +244,13 @@ const Navbar = () => {
             <span className={`font-serif text-2xl font-bold tracking-wide transition-colors ${scrolled ? 'text-pink-600' : 'text-pink-800'}`}>Pink Sip</span>
           </div>
           <div className="hidden md:flex items-center space-x-8">
-            {['Home', 'Products', 'Our Story', 'Contact'].map((item) => (
+            {['Home', 'Products', 'Ingredients', 'Contact'].map((item) => (
               <a key={item} href={`#${item.toLowerCase().replace(' ', '-')}`} className="text-gray-700 hover:text-pink-600 font-medium transition-colors relative group">
                 {item}
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-pink-500 transition-all group-hover:w-full"></span>
               </a>
             ))}
-            <a href="#contact" className="shimmer-btn text-white px-6 py-2 rounded-full font-medium transition-all shadow-lg hover:shadow-pink-300/50 transform hover:-translate-y-0.5 active:scale-95 cursor-pointer flex items-center justify-center">
-              Order Now
-            </a>
+            <a href="#contact" className="shimmer-btn text-white px-6 py-2 rounded-full font-medium transition-all shadow-lg hover:shadow-pink-300/50 transform hover:-translate-y-0.5 active:scale-95 cursor-pointer flex items-center justify-center">Order Now</a>
           </div>
           <div className="md:hidden flex items-center">
             <button onClick={() => setIsOpen(!isOpen)} className="text-pink-800">{isOpen ? <X size={28} /> : <Menu size={28} />}</button>
@@ -166,12 +259,10 @@ const Navbar = () => {
       </div>
       <div className={`md:hidden absolute w-full glass-panel transition-all duration-300 ease-in-out ${isOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0 overflow-hidden'}`}>
         <div className="px-4 pt-2 pb-6 space-y-2">
-          {['Home', 'Products', 'Our Story', 'Contact'].map((item) => (
+          {['Home', 'Products', 'Ingredients', 'Contact'].map((item) => (
             <a key={item} href={`#${item.toLowerCase().replace(' ', '-')}`} onClick={() => setIsOpen(false)} className="block px-3 py-3 text-pink-900 font-medium hover:bg-pink-100 rounded-lg">{item}</a>
           ))}
-          <a href="#contact" onClick={() => setIsOpen(false)} className="block text-center w-full mt-4 bg-pink-500 text-white px-6 py-3 rounded-xl font-bold shadow-lg cursor-pointer">
-            Order Now
-          </a>
+          <a href="#contact" onClick={() => setIsOpen(false)} className="block text-center w-full mt-4 bg-pink-500 text-white px-6 py-3 rounded-xl font-bold shadow-lg cursor-pointer">Order Now</a>
         </div>
       </div>
     </nav>
@@ -181,20 +272,17 @@ const Navbar = () => {
 const Hero = () => {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const handleMouseMove = (e) => {
-    const x = (window.innerWidth - e.pageX) / 40;
-    const y = (window.innerHeight - e.pageY) / 40;
-    setMousePos({ x, y });
+    setMousePos({ x: (window.innerWidth - e.pageX) / 40, y: (window.innerHeight - e.pageY) / 40 });
   };
-
   return (
     <section id="home" onMouseMove={handleMouseMove} className="relative min-h-screen flex items-center pt-20 pb-20 overflow-hidden bg-gradient-to-b from-pink-50 via-pink-100/50 to-pink-200/30">
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-[-10%] right-[-5%] w-[600px] h-[600px] bg-pink-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-float" style={{ transform: `translate(${mousePos.x}px, ${mousePos.y}px)` }}></div>
         <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-rose-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-float" style={{ animationDelay: '2s', transform: `translate(${mousePos.x * -1}px, ${mousePos.y * -1}px)` }}></div>
+        {/* Floating petals in background of HERO section too */}
         <FloatingPetal delay={0} duration={15} size={24} top={20} />
         <FloatingPetal delay={5} duration={18} size={32} top={60} />
       </div>
-
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full mb-12">
         <div className="flex flex-col md:flex-row items-center justify-between gap-12">
           <div className="flex-1 text-center md:text-left space-y-8" style={{ transform: `translate(${mousePos.x * 0.5}px, ${mousePos.y * 0.5}px)` }}>
@@ -214,38 +302,27 @@ const Hero = () => {
               </a>
             </div>
           </div>
-
           <div className="flex-1 relative flex justify-center items-center">
             <div className="absolute w-[450px] h-[450px] border border-pink-200/50 rounded-full animate-[spin_30s_linear_infinite]"></div>
-            
-            {/* --- UPDATED BOTTLE CONTAINER --- */}
-            {/* Added 'animate-bottle-enter' class for the entry transition */}
             <div className="relative z-20" style={{ transform: `translate(${mousePos.x * -1.5}px, ${mousePos.y * -1.5}px)` }}>
-               <div className="relative group">
+                <div className="relative group">
                   <div className="absolute inset-0 bg-pink-500 rounded-full blur-[60px] opacity-20 group-hover:opacity-30 transition-opacity duration-500"></div>
-                  
                   <img src="https://img.freepik.com/free-photo/front-view-pink-smoothie-bottle-with-straw_23-2148526544.jpg?t=st=1764726799~exp=1764730399~hmac=4760ab1f1aaf3af0dbcd333ceeaca4cafaa7651c7604da1b762fb301b4035419&w=1480" 
                     alt="Pink Sip Rose Milk Bottle" 
                     className="animate-bottle-enter relative w-64 md:w-80 h-auto object-cover rounded-3xl shadow-2xl transform transition-all duration-1000 ease-out hover:scale-105"
-                    style={{ 
-                      maskImage: 'linear-gradient(to bottom, black 85%, transparent 100%)', 
-                      WebkitMaskImage: 'linear-gradient(to bottom, black 85%, transparent 100%)' 
-                    }}
+                    style={{ maskImage: 'linear-gradient(to bottom, black 85%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to bottom, black 85%, transparent 100%)' }}
                   />
-                  
-                  {/* Floating badge */}
                   <div className="absolute top-12 -right-4 glass-card p-3 rounded-2xl animate-float" style={{ animationDelay: '1s' }}>
                     <div className="flex items-center gap-3">
-                       <div className="bg-pink-100 p-2 rounded-full text-pink-500"><Droplet size={20} fill="currentColor" /></div>
-                       <div><p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Purity</p><p className="text-sm font-bold text-pink-900">100% Real</p></div>
+                        <div className="bg-pink-100 p-2 rounded-full text-pink-500"><Droplet size={20} fill="currentColor" /></div>
+                        <div><p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Purity</p><p className="text-sm font-bold text-pink-900">100% Real</p></div>
                     </div>
                   </div>
-               </div>
+                </div>
             </div>
           </div>
         </div>
       </div>
-      
       <WaveSeparator />
     </section>
   );
@@ -292,10 +369,9 @@ const Products = () => {
               {item.tag && <div className="absolute top-4 right-4 bg-gradient-to-r from-pink-500 to-rose-500 text-white text-[10px] font-bold px-3 py-1 rounded-full shadow-md z-10 uppercase tracking-wide">{item.tag}</div>}
               <div className={`h-56 ${item.color} rounded-3xl mb-6 flex items-center justify-center relative overflow-hidden`}>
                  <div className="absolute inset-0 bg-white/30 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                 {/* UPDATED: Added better hover lift and rotation for product images */}
                  <img src="https://img.freepik.com/free-photo/high-angle-healthy-pink-smoothie_23-2148226032.jpg?t=st=1764726491~exp=1764730091~hmac=f8c3c90b3eca9c9ff5e2313e8b9619d7de2740b4717476dd2daedd3b2058cef9&w=1480" 
-                      alt={item.name} 
-                      className="h-40 object-cover rounded-xl shadow-lg transform group-hover:scale-110 group-hover:-rotate-6 group-hover:-translate-y-2 transition-all duration-500 ease-out" />
+                       alt={item.name} 
+                       className="h-40 object-cover rounded-xl shadow-lg transform group-hover:scale-110 group-hover:-rotate-6 group-hover:-translate-y-2 transition-all duration-500 ease-out" />
               </div>
               <div className="flex justify-between items-end">
                 <div><h3 className="text-xl font-bold text-gray-800">{item.name}</h3><p className="text-gray-500 text-sm mt-1">{item.size}</p></div>
@@ -309,39 +385,73 @@ const Products = () => {
   );
 };
 
-const Ingredients = () => {
-  return (
-    <section id="our-story" className="py-24 bg-pink-900 relative overflow-hidden">
-      <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-white/5 to-transparent"></div>
-      <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-pink-600 rounded-full mix-blend-multiply filter blur-[100px] opacity-50"></div>
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="text-center mb-16 reveal-hidden">
-          <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">What's Inside?</h2>
-          <p className="text-pink-100 max-w-2xl mx-auto text-lg leading-relaxed">We believe in transparency. No hidden chemicals, no artificial preservatives. Just the simple, wholesome ingredients you trust.</p>
-        </div>
-        <div className="reveal-hidden glass-panel bg-white/10 border-white/20 rounded-[2.5rem] p-8 md:p-12 relative overflow-hidden">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div className="space-y-8">
-              {[{ title: 'Premium Rose Essence', sub: 'Extracted from real paneer roses.' }, { title: 'Farm Fresh Milk', sub: 'Sourced daily from local dairy farms.' }, { title: 'Organic Cane Sugar', sub: 'Just a touch for natural sweetness.' }, { title: 'Love & Care', sub: 'Handcrafted in small batches.' }].map((item, i) => (
-                <div key={i} className="flex items-start gap-4 group">
-                  <div className="w-10 h-10 rounded-full bg-pink-500/20 flex items-center justify-center text-pink-400 group-hover:bg-pink-500 group-hover:text-white transition-colors border border-pink-500/30"><CheckCircle2 size={20} /></div>
-                  <div><h4 className="text-white font-bold text-lg">{item.title}</h4><p className="text-pink-200/70 text-sm">{item.sub}</p></div>
+const IngredientItem = ({ title, desc, emoji, index }) => {
+    return (
+        <motion.div
+            initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: false, margin: "-100px" }}
+            transition={{ duration: 0.8, delay: index * 0.2 }}
+            className={`flex flex-col md:flex-row items-center gap-8 mb-24 md:mb-32 ${index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse md:text-right'}`}
+        >
+            <div className="w-full md:w-1/2 relative z-10">
+                <div className="glass-card bg-white/50 backdrop-blur-sm p-8 rounded-3xl border border-white/60 shadow-lg hover:shadow-xl transition-shadow">
+                    <div className="text-6xl mb-4">{emoji}</div>
+                    <h3 className="text-3xl font-serif font-bold text-rose-950 mb-2">{title}</h3>
+                    <p className="text-rose-900/70 leading-relaxed">{desc}</p>
                 </div>
-              ))}
             </div>
-            <div className="relative h-full min-h-[300px] flex items-center justify-center">
-               <div className="absolute inset-0 bg-gradient-to-tr from-pink-500/20 to-transparent rounded-2xl rotate-3"></div>
-               <div className="relative glass-card bg-white/5 p-8 rounded-2xl border-white/10 backdrop-blur-md text-center hover:scale-105 transition-transform duration-500">
-                  <div className="w-24 h-24 bg-gradient-to-br from-pink-400 to-rose-600 rounded-full mx-auto mb-4 flex items-center justify-center shadow-lg shadow-pink-900/50"><Star size={40} className="text-white animate-pulse" /></div>
-                  <h3 className="text-2xl font-bold text-white mb-2">100% Natural</h3>
-                  <p className="text-pink-200 text-sm">Our promise is purity. <br/> From our kitchen to your hands.</p>
-               </div>
+            <div className="hidden md:block w-1/2"></div> 
+        </motion.div>
+    );
+};
+
+const Ingredients = () => {
+    const containerRef = useRef(null);
+    const { scrollYProgress } = useScroll({ target: containerRef, offset: ["start end", "end start"] });
+    const y = useTransform(scrollYProgress, [0, 1], [0, 200]);
+    const scale = useTransform(scrollYProgress, [0, 0.5, 1], [0.8, 1, 0.8]);
+    const rotate = useTransform(scrollYProgress, [0, 1], [-10, 10]);
+
+    const ingredients = [
+        { title: "Paneer Rose", desc: "Hand-picked at dawn for peak fragrance. We use only the petals, ensuring a smooth, non-bitter essence.", emoji: "🌹" },
+        { title: "Farm Fresh Milk", desc: "Sourced daily from local, grass-fed cows. Pasteurized gently to keep the natural creaminess intact.", emoji: "🥛" },
+        { title: "Organic Cane Sugar", desc: "Just a hint of unrefined sweetness. No bleached white sugar, only the caramel-like richness of nature.", emoji: "🍬" }
+    ];
+
+    return (
+        <section id="ingredients" ref={containerRef} className="py-32 bg-rose-50 relative overflow-hidden">
+            <div className="max-w-6xl mx-auto px-4 relative">
+                <div className="text-center mb-32 relative z-20">
+                    <motion.span initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} className="text-rose-500 font-bold tracking-widest uppercase text-sm">
+                        The Composition
+                    </motion.span>
+                    <motion.h2
+                        initial={{ y: 20, opacity: 0 }} whileInView={{ y: 0, opacity: 1 }}
+                        className="text-5xl md:text-6xl font-bold text-rose-950 mt-4"
+                    >
+                        Pure Ingredients. <br /> Nothing Else.
+                    </motion.h2>
+                </div>
+
+                <div className="absolute top-0 left-0 w-full h-full pointer-events-none z-0 flex items-center justify-center overflow-hidden">
+                    <motion.div style={{ y, scale, rotate }} className="relative top-24 md:top-0">
+                        <div className="absolute inset-0 bg-rose-500/20 blur-[80px] rounded-full"></div>
+                        <img src="https://img.freepik.com/free-photo/front-view-pink-smoothie-bottle-with-straw_23-2148526544.jpg?t=st=1764726799~exp=1764730399~hmac=4760ab1f1aaf3af0dbcd333ceeaca4cafaa7651c7604da1b762fb301b4035419&w=1480"
+                            alt="Central Bottle" className="h-[400px] md:h-[600px] object-cover rounded-full opacity-90"
+                            style={{ maskImage: 'linear-gradient(to bottom, black 80%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to bottom, black 80%, transparent 100%)' }}
+                        />
+                    </motion.div>
+                </div>
+
+                <div className="relative z-10">
+                    {ingredients.map((item, idx) => (
+                        <IngredientItem key={idx} {...item} index={idx} />
+                    ))}
+                </div>
             </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
+        </section>
+    );
 };
 
 const Contact = () => {
@@ -366,7 +476,7 @@ const Contact = () => {
                  </div>
                  <div className="space-y-2">
                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wide ml-1">Phone Number</label>
-                   <input type="tel" className="w-full glass-input px-4 py-3 rounded-xl text-sm text-gray-800 focus:outline-none" placeholder="+1 (555) 000-0000" />
+                   <input type="tel" className="w-full glass-input px-4 py-3 rounded-xl text-sm text-gray-800 focus:outline-none" placeholder="+91 7867036289" />
                  </div>
                  <div className="space-y-2">
                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wide ml-1">Message</label>
@@ -378,16 +488,7 @@ const Contact = () => {
                </form>
             </div>
             <div className="glass-card bg-white rounded-3xl overflow-hidden border border-white/50 h-full min-h-[400px] shadow-xl relative">
-              <iframe 
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3935.539353245453!2d77.7952673!3d9.4587042!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3b06cf72d8c36c4b%3A0x6295555462712952!2sSivakasi%2C%20Tamil%20Nadu!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin" 
-                width="100%" 
-                height="100%" 
-                style={{border:0}} 
-                allowFullScreen="" 
-                loading="lazy" 
-                referrerPolicy="no-referrer-when-downgrade"
-                className="absolute inset-0"
-              ></iframe>
+              <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3935.539353245453!2d77.7952673!3d9.4587042!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3b06cf72d8c36c4b%3A0x6295555462712952!2sSivakasi%2C%20Tamil%20Nadu!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin" width="100%" height="100%" style={{border:0}} allowFullScreen="" loading="lazy" referrerPolicy="no-referrer-when-downgrade" className="absolute inset-0"></iframe>
               <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-md px-4 py-2 rounded-lg shadow-lg border border-pink-100">
                 <div className="flex items-center gap-2">
                    <MapPin size={16} className="text-pink-500" />
@@ -403,111 +504,71 @@ const Contact = () => {
 };
 
 const Footer = () => {
+  const whatsappUrl = "https://wa.me/917867036289?text=Hi%20Pink%20Sip,%20I%20would%20like%20to%20know%20more%20about%20your%20products!";
   return (
     <footer className="bg-gradient-to-r from-rose-950 to-pink-900 text-white pt-16 pb-8 border-t border-white/10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid md:grid-cols-4 gap-12 mb-12">
-          
           <div className="space-y-6">
              <h3 className="text-2xl font-bold font-serif tracking-wide text-white">Pink Sip</h3>
-             <p className="text-pink-200/80 text-sm leading-relaxed">
-               "Sip the love, taste the tradition. Pure rose milk blended with happiness and discovery."
-             </p>
+             <p className="text-pink-200/80 text-sm leading-relaxed">"Sip the love, taste the tradition. Pure rose milk blended with happiness and discovery."</p>
              <div className="flex gap-4 pt-2">
                 <a href="#" className="hover:text-pink-400 transition-colors"><Instagram size={28} /></a>
-                <a href="#" className="hover:text-green-400 transition-colors"><FaWhatsapp size={28} /></a>
+                <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="hover:text-green-400 transition-colors"><FaWhatsapp size={28} /></a>
              </div>
              <p className="text-xs text-pink-300">IG: pinksip_official</p>
           </div>
-
           <div className="space-y-6">
             <h4 className="text-sm font-bold uppercase tracking-widest text-pink-300">Contact Us</h4>
             <div className="space-y-4">
-               <div className="flex items-start gap-3">
-                  <Phone size={20} className="text-pink-400 mt-1 shrink-0" />
-                  <div>
-                    <span className="block font-bold text-white">Call</span>
-                    <span className="text-sm text-pink-100/80">+1 (555) 123-4567</span>
-                  </div>
-               </div>
-               <div className="flex items-start gap-3">
-                  <FaWhatsapp size={20} className="text-green-400 mt-1 shrink-0" />
-                  <div>
-                    <span className="block font-bold text-white">WhatsApp</span>
-                    <span className="text-sm text-pink-100/80">+1 (555) 987-6543</span>
-                  </div>
-               </div>
-               <div className="flex items-start gap-3">
-                  <Mail size={20} className="text-blue-400 mt-1 shrink-0" />
-                  <div>
-                    <span className="block font-bold text-white">Email</span>
-                    <span className="text-sm text-pink-100/80">hello@pinksip.com</span>
-                  </div>
-               </div>
-               <div className="flex items-start gap-3">
-                  <MapPin size={20} className="text-yellow-400 mt-1 shrink-0" />
-                  <div>
-                    <span className="block font-bold text-white">Visit</span>
-                    <span className="text-sm text-pink-100/80">Flavor Town, USA</span>
-                  </div>
-               </div>
+               <div className="flex items-start gap-3"><Phone size={20} className="text-pink-400 mt-1 shrink-0" /><div><span className="block font-bold text-white">Call</span><a href="tel:+917867036289" className="text-sm text-pink-100/80 hover:text-white transition-colors">+91 7867036289</a></div></div>
+               <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="flex items-start gap-3 group"><FaWhatsapp size={20} className="text-green-400 mt-1 shrink-0 group-hover:scale-110 transition-transform" /><div><span className="block font-bold text-white group-hover:text-green-400 transition-colors">WhatsApp</span><span className="text-sm text-pink-100/80 group-hover:text-white transition-colors">+91 7867036289</span></div></a>
+               <div className="flex items-start gap-3"><Mail size={20} className="text-blue-400 mt-1 shrink-0" /><div><span className="block font-bold text-white">Email</span><span className="text-sm text-pink-100/80">hello@pinksip.com</span></div></div>
+               <div className="flex items-start gap-3"><MapPin size={20} className="text-yellow-400 mt-1 shrink-0" /><div><span className="block font-bold text-white">Visit</span><span className="text-sm text-pink-100/80">Sivakasi</span></div></div>
             </div>
           </div>
-
           <div className="space-y-6">
             <h4 className="text-sm font-bold uppercase tracking-widest text-pink-300">Our Promise</h4>
             <ul className="space-y-4">
-               <li className="flex items-start gap-3 text-sm text-pink-100/80">
-                  <Star size={18} className="text-yellow-400 shrink-0" />
-                  <span>100% Natural Ingredient</span>
-               </li>
-               <li className="flex items-start gap-3 text-sm text-pink-100/80">
-                  <Heart size={18} className="text-red-400 shrink-0" />
-                  <span>Made with Pure Love & Care</span>
-               </li>
-               <li className="flex items-start gap-3 text-sm text-pink-100/80">
-                  <CheckCircle2 size={18} className="text-green-400 shrink-0" />
-                  <span>Best Local Beverage Brand</span>
-               </li>
+               <li className="flex items-start gap-3 text-sm text-pink-100/80"><Star size={18} className="text-yellow-400 shrink-0" /><span>100% Natural Ingredient</span></li>
+               <li className="flex items-start gap-3 text-sm text-pink-100/80"><Heart size={18} className="text-red-400 shrink-0" /><span>Made with Pure Love & Care</span></li>
+               <li className="flex items-start gap-3 text-sm text-pink-100/80"><CheckCircle2 size={18} className="text-green-400 shrink-0" /><span>Best Local Beverage Brand</span></li>
             </ul>
           </div>
-
           <div className="space-y-6">
              <h4 className="text-sm font-bold uppercase tracking-widest text-pink-300">Quick Links</h4>
              <ul className="space-y-3 text-sm text-pink-100/80">
                <li><a href="#home" className="hover:text-white hover:translate-x-1 transition-all inline-block flex items-center gap-1">Home <ArrowUpRight size={12}/></a></li>
                <li><a href="#products" className="hover:text-white hover:translate-x-1 transition-all inline-block flex items-center gap-1">Our Menu <ArrowUpRight size={12}/></a></li>
-               <li><a href="#our-story" className="hover:text-white hover:translate-x-1 transition-all inline-block flex items-center gap-1">Ingredients <ArrowUpRight size={12}/></a></li>
+               <li><a href="#ingredients" className="hover:text-white hover:translate-x-1 transition-all inline-block flex items-center gap-1">Ingredients <ArrowUpRight size={12}/></a></li>
                <li><a href="#contact" className="hover:text-white hover:translate-x-1 transition-all inline-block flex items-center gap-1">Order Online <ArrowUpRight size={12}/></a></li>
              </ul>
           </div>
-
         </div>
-
-        <div className="border-t border-white/10 pt-8 text-center">
-           <p className="text-pink-300/60 text-sm">
-             © 2025 Pink Sip. All Rights Reserved.
-           </p>
-        </div>
+        <div className="border-t border-white/10 pt-8 text-center"><p className="text-pink-300/60 text-sm">© 2025 Pink Sip. All Rights Reserved.</p></div>
       </div>
     </footer>
   );
 };
 
 const App = () => {
+  const [loading, setLoading] = useState(true);
   useScrollReveal();
   return (
     <div className="font-sans text-gray-900 selection:bg-pink-200 selection:text-pink-900">
       <style>{customStyles}</style>
-      <Navbar />
-      <main>
-        <Hero />
-        <Features />
-        <Products />
-        <Ingredients />
-        <Contact />
-      </main>
-      <Footer />
+      {loading && <BottlePreloader finishLoading={() => setLoading(false)} />}
+      <div className={`transition-opacity duration-1000 ${loading ? 'opacity-0 h-0 overflow-hidden' : 'opacity-100'}`}>
+        <Navbar />
+        <main>
+          <Hero />
+          <Features />
+          <Products />
+          <Ingredients />
+          <Contact />
+        </main>
+        <Footer />
+      </div>
     </div>
   );
 };
