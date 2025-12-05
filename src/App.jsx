@@ -7,6 +7,12 @@ import {
 import { FaWhatsapp } from 'react-icons/fa';
 import { motion, useScroll, useTransform } from 'framer-motion';
 
+// --- IMAGE IMPORTS ---
+// 1. Product Image (ensure in src/assets/)
+import productImg from './assets/pinksip_bottle.png'; 
+// 2. Logo Image (ensure in src root or adjust path)
+import logoImg from './pinksiplogos1.png';
+
 // --- CUSTOM STYLES & ANIMATIONS ---
 const customStyles = `
   html { scroll-behavior: smooth; }
@@ -27,15 +33,15 @@ const customStyles = `
     100% { transform: skewX(0deg); }
   }
 
-  /* Straw Drop Animation - adjusted to land perfectly */
+  /* Straw Drop Animation */
   @keyframes straw-entry {
     0% { transform: translateY(-400px) rotate(15deg); opacity: 0; }
-    60% { transform: translateY(10px) rotate(8deg); opacity: 1; } /* Hit bottom */
-    80% { transform: translateY(-15px) rotate(8deg); } /* Bounce up */
-    100% { transform: translateY(0) rotate(8deg); opacity: 1; } /* Settle */
+    60% { transform: translateY(10px) rotate(8deg); opacity: 1; }
+    80% { transform: translateY(-15px) rotate(8deg); }
+    100% { transform: translateY(0) rotate(8deg); opacity: 1; }
   }
 
-  /* Bubbles rising in the smoothie */
+  /* Bubbles rising */
   @keyframes speck-rise {
     0% { transform: translateY(0) scale(1); opacity: 0.8; }
     100% { transform: translateY(-120px) scale(0); opacity: 0; }
@@ -43,7 +49,7 @@ const customStyles = `
 
   /* --- GENERAL UI ANIMATIONS --- */
   
-  /* Rose Petal Drift (Left to Right) */
+  /* Rose Petal Drift */
   @keyframes drift {
     0% { transform: translateX(0) translateY(0) rotate(-5deg); opacity: 0; }
     10% { opacity: 1; }
@@ -111,7 +117,7 @@ const FloatingPetal = ({ delay, duration, size, top }) => (
       animation: `drift ${duration}s linear infinite`, 
       animationDelay: `${delay}s`, 
       top: `${top}%`, 
-      left: '-10%' // Start off-screen left
+      left: '-10%' 
     }}
   >
     <div className={`text-pink-300 transform rotate-45 drop-shadow-sm`} style={{ fontSize: `${size}px` }}>🌸</div>
@@ -127,8 +133,6 @@ const BottlePreloader = ({ finishLoading }) => {
 
   return (
     <div className="fixed inset-0 z-[100] bg-pink-50 flex flex-col items-center justify-center overflow-hidden">
-      
-      {/* Background Ambience: RESTORED & ENHANCED PETALS */}
       <div className="absolute inset-0 pointer-events-none w-full h-full">
          <FloatingPetal delay={0} duration={6} size={30} top={20} />
          <FloatingPetal delay={2} duration={8} size={20} top={80} />
@@ -138,11 +142,7 @@ const BottlePreloader = ({ finishLoading }) => {
       </div>
 
       <div className="relative z-10 flex flex-col items-center mt-8">
-        
-        {/* BOTTLE COMPOSITION CONTAINER */}
         <div className="relative w-[140px] h-[300px]">
-          
-          {/* STRAW POSITIONING */}
           <div className="absolute top-[-50px] left-[52%] w-[14px] h-[360px] z-0 rounded-full shadow-sm"
                style={{
                  background: 'repeating-linear-gradient(45deg, #fce7f3, #fce7f3 10px, #ec4899 10px, #ec4899 20px)',
@@ -152,7 +152,6 @@ const BottlePreloader = ({ finishLoading }) => {
                }}>
           </div>
 
-          {/* SVG BOTTLE STRUCTURE */}
           <svg viewBox="0 0 100 200" className="w-full h-full drop-shadow-2xl z-10 relative overflow-visible">
             <defs>
               <path id="bottle-shape" d="M 30 5 L 30 35 Q 30 65 10 85 L 10 185 Q 10 200 50 200 Q 90 200 90 185 L 90 85 Q 70 65 70 35 L 70 5 Z" />
@@ -164,25 +163,17 @@ const BottlePreloader = ({ finishLoading }) => {
               </clipPath>
             </defs>
 
-            {/* A. Background Glass Tint */}
             <use href="#bottle-shape" fill="rgba(255,255,255,0.2)" />
 
-            {/* B. The Liquid (Masked) */}
             <g clipPath="url(#bottle-clip)">
               <foreignObject x="0" y="0" width="100" height="200">
                 <div className="w-full h-full flex flex-col justify-end">
                    <div className="w-full bg-pink-400 relative"
                         style={{ animation: 'rise-liquid 2.5s ease-out forwards 0.5s', height: '0%' }}>
-                        
-                        {/* Texture Overlay */}
                         <div className="absolute inset-0 w-full h-full opacity-60" 
                              style={{ backgroundImage: 'radial-gradient(#be185d 1px, transparent 1px)', backgroundSize: '12px 12px' }}></div>
-                        
-                        {/* Top Surface */}
                         <div className="absolute top-0 left-0 w-full h-2 bg-pink-300 opacity-50 blur-[1px]" 
                              style={{ animation: 'surface-wobble 3s infinite ease-in-out' }}></div>
-
-                        {/* Rising Bubbles */}
                         <div className="absolute bottom-10 left-4 w-1 h-1 bg-rose-700 rounded-full" style={{ animation: 'speck-rise 4s infinite' }}></div>
                         <div className="absolute bottom-20 left-12 w-1.5 h-1.5 bg-rose-800 rounded-full" style={{ animation: 'speck-rise 3s infinite 0.5s' }}></div>
                         <div className="absolute bottom-5 left-16 w-1 h-1 bg-rose-600 rounded-full" style={{ animation: 'speck-rise 5s infinite 1s' }}></div>
@@ -191,21 +182,15 @@ const BottlePreloader = ({ finishLoading }) => {
               </foreignObject>
             </g>
 
-            {/* C. Glass Reflections & Highlights */}
             <path d="M 15 90 Q 15 120 15 180" fill="none" stroke="white" strokeWidth="2" opacity="0.4" strokeLinecap="round" />
             <path d="M 85 90 Q 85 120 85 180" fill="none" stroke="white" strokeWidth="2" opacity="0.2" strokeLinecap="round" />
             <path d="M 32 10 L 32 30" fill="none" stroke="white" strokeWidth="1.5" opacity="0.5" strokeLinecap="round" />
-            
-            {/* D. Bottle Outline/Rim */}
             <use href="#bottle-shape" fill="none" stroke="rgba(255,255,255,0.6)" strokeWidth="3" />
-            
-            {/* E. The Thick Rim at Top */}
             <rect x="25" y="2" width="50" height="8" rx="2" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="3" />
             <rect x="25" y="2" width="50" height="8" rx="2" fill="rgba(255,255,255,0.2)" />
           </svg>
         </div>
 
-        {/* Loading Text */}
         <div className="mt-6 text-center">
            <h2 className="text-xl md:text-2xl font-bold text-pink-900 tracking-[0.2em] uppercase animate-pulse">
             Brewing Freshness...
@@ -238,10 +223,17 @@ const Navbar = () => {
     <nav className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'glass-panel py-3 shadow-sm' : 'bg-transparent py-6'}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center">
-          <div className="flex-shrink-0 flex items-center gap-2 cursor-pointer group">
-            <div className="w-10 h-10 bg-gradient-to-tr from-pink-500 to-rose-400 rounded-full flex items-center justify-center text-white font-bold text-xl animate-liquid-pulse shadow-lg group-hover:rotate-12 transition-transform">P</div>
-            <span className={`font-serif text-2xl font-bold tracking-wide transition-colors ${scrolled ? 'text-pink-600' : 'text-pink-800'}`}>Pink Sip</span>
+          
+          {/* UPDATED LOGO SECTION - INCREASED SIZE */}
+          <div className="flex-shrink-0 flex items-center cursor-pointer">
+             <img 
+               src={logoImg} 
+               alt="Pink Sip" 
+               // Changed h-12 to h-16 for a larger logo
+               className="h-16 w-auto object-contain hover:scale-105 transition-transform duration-300" 
+             />
           </div>
+
           <div className="hidden md:flex items-center space-x-8">
             {['Home', 'Products', 'Ingredients', 'Contact'].map((item) => (
               <a key={item} href={`#${item.toLowerCase().replace(' ', '-')}`} className="text-gray-700 hover:text-pink-600 font-medium transition-colors relative group">
@@ -278,7 +270,6 @@ const Hero = () => {
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-[-10%] right-[-5%] w-[600px] h-[600px] bg-pink-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-float" style={{ transform: `translate(${mousePos.x}px, ${mousePos.y}px)` }}></div>
         <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-rose-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-float" style={{ animationDelay: '2s', transform: `translate(${mousePos.x * -1}px, ${mousePos.y * -1}px)` }}></div>
-        {/* Floating petals in background of HERO section too */}
         <FloatingPetal delay={0} duration={15} size={24} top={20} />
         <FloatingPetal delay={5} duration={18} size={32} top={60} />
       </div>
@@ -368,9 +359,9 @@ const Products = () => {
               {item.tag && <div className="absolute top-4 right-4 bg-gradient-to-r from-pink-500 to-rose-500 text-white text-[10px] font-bold px-3 py-1 rounded-full shadow-md z-10 uppercase tracking-wide">{item.tag}</div>}
               <div className={`h-56 ${item.color} rounded-3xl mb-6 flex items-center justify-center relative overflow-hidden`}>
                  <div className="absolute inset-0 bg-white/30 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                 <img src="https://img.freepik.com/free-photo/high-angle-healthy-pink-smoothie_23-2148226032.jpg?t=st=1764726491~exp=1764730091~hmac=f8c3c90b3eca9c9ff5e2313e8b9619d7de2740b4717476dd2daedd3b2058cef9&w=1480" 
+                 <img src={productImg} 
                        alt={item.name} 
-                       className="h-40 object-cover rounded-xl shadow-lg transform group-hover:scale-110 group-hover:-rotate-6 group-hover:-translate-y-2 transition-all duration-500 ease-out" />
+                       className="h-48 w-auto object-contain drop-shadow-xl transform group-hover:scale-110 group-hover:-rotate-6 group-hover:-translate-y-2 transition-all duration-500 ease-out" />
               </div>
               <div className="flex justify-between items-end">
                 <div><h3 className="text-xl font-bold text-gray-800">{item.name}</h3><p className="text-gray-500 text-sm mt-1">{item.size}</p></div>
@@ -471,11 +462,11 @@ const Contact = () => {
                <form className="space-y-5">
                  <div className="space-y-2">
                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wide ml-1">Your Name</label>
-                   <input type="text" className="w-full glass-input px-4 py-3 rounded-xl text-sm text-gray-800 focus:outline-none" placeholder="John Doe" />
+                   <input type="text" className="w-full glass-input px-4 py-3 rounded-xl text-sm text-gray-800 focus:outline-none" placeholder="Name" />
                  </div>
                  <div className="space-y-2">
                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wide ml-1">Phone Number</label>
-                   <input type="tel" className="w-full glass-input px-4 py-3 rounded-xl text-sm text-gray-800 focus:outline-none" placeholder="+91 7867036289" />
+                   <input type="tel" className="w-full glass-input px-4 py-3 rounded-xl text-sm text-gray-800 focus:outline-none" placeholder="+91 8807869898" />
                  </div>
                  <div className="space-y-2">
                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wide ml-1">Message</label>
@@ -487,11 +478,20 @@ const Contact = () => {
                </form>
             </div>
             <div className="glass-card bg-white rounded-3xl overflow-hidden border border-white/50 h-full min-h-[400px] shadow-xl relative">
-              <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3935.539353245453!2d77.7952673!3d9.4587042!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3b06cf72d8c36c4b%3A0x6295555462712952!2sSivakasi%2C%20Tamil%20Nadu!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin" width="100%" height="100%" style={{border:0}} allowFullScreen="" loading="lazy" referrerPolicy="no-referrer-when-downgrade" className="absolute inset-0"></iframe>
+              <iframe 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3933.447078502623!2d77.8056743!3d9.4536873!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3b06cf0044231561%3A0x671614574879128!2s2%2F337%2C%20State%20Bank%20Colony%2C%20Sivakasi%2C%20Tamil%20Nadu%20626123!5e0!3m2!1sen!2sin!4v1718638723845!5m2!1sen!2sin"
+                width="100%" 
+                height="100%" 
+                style={{border:0}} 
+                allowFullScreen="" 
+                loading="lazy" 
+                referrerPolicy="no-referrer-when-downgrade" 
+                className="absolute inset-0">
+              </iframe>
               <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-md px-4 py-2 rounded-lg shadow-lg border border-pink-100">
                 <div className="flex items-center gap-2">
                    <MapPin size={16} className="text-pink-500" />
-                   <span className="text-xs font-bold text-gray-800">Sivakasi, Tamil Nadu</span>
+                   <span className="text-xs font-bold text-gray-800">2/337/D6, State Bank Colony, Sivakasi - 626 129</span>
                 </div>
               </div>
             </div>
@@ -503,7 +503,7 @@ const Contact = () => {
 };
 
 const Footer = () => {
-  const whatsappUrl = "https://wa.me/917867036289?text=Hi%20Pink%20Sip,%20I%20would%20like%20to%20know%20more%20about%20your%20products!";
+  const whatsappUrl = "https://wa.me/918807869898?text=Hi%20Pink%20Sip,%20I%20would%20like%20to%20know%20more%20about%20your%20products!";
   return (
     <footer className="bg-gradient-to-r from-rose-950 to-pink-900 text-white pt-16 pb-8 border-t border-white/10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -520,10 +520,10 @@ const Footer = () => {
           <div className="space-y-6">
             <h4 className="text-sm font-bold uppercase tracking-widest text-pink-300">Contact Us</h4>
             <div className="space-y-4">
-               <div className="flex items-start gap-3"><Phone size={20} className="text-pink-400 mt-1 shrink-0" /><div><span className="block font-bold text-white">Call</span><a href="tel:+917867036289" className="text-sm text-pink-100/80 hover:text-white transition-colors">+91 7867036289</a></div></div>
-               <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="flex items-start gap-3 group"><FaWhatsapp size={20} className="text-green-400 mt-1 shrink-0 group-hover:scale-110 transition-transform" /><div><span className="block font-bold text-white group-hover:text-green-400 transition-colors">WhatsApp</span><span className="text-sm text-pink-100/80 group-hover:text-white transition-colors">+91 7867036289</span></div></a>
-               <div className="flex items-start gap-3"><Mail size={20} className="text-blue-400 mt-1 shrink-0" /><div><span className="block font-bold text-white">Email</span><span className="text-sm text-pink-100/80">hello@pinksip.com</span></div></div>
-               <div className="flex items-start gap-3"><MapPin size={20} className="text-yellow-400 mt-1 shrink-0" /><div><span className="block font-bold text-white">Visit</span><span className="text-sm text-pink-100/80">Sivakasi</span></div></div>
+               <div className="flex items-start gap-3"><Phone size={20} className="text-pink-400 mt-1 shrink-0" /><div><span className="block font-bold text-white">Call</span><a href="tel:+918807869898" className="text-sm text-pink-100/80 hover:text-white transition-colors">+91 8807869898</a></div></div>
+               <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="flex items-start gap-3 group"><FaWhatsapp size={20} className="text-green-400 mt-1 shrink-0 group-hover:scale-110 transition-transform" /><div><span className="block font-bold text-white group-hover:text-green-400 transition-colors">WhatsApp</span><span className="text-sm text-pink-100/80 group-hover:text-white transition-colors">+91 8807869898</span></div></a>
+               <div className="flex items-start gap-3"><Mail size={20} className="text-blue-400 mt-1 shrink-0" /><div><span className="block font-bold text-white">Email</span><span className="text-sm text-pink-100/80">care@thebrewbeverages.com</span></div></div>
+               <div className="flex items-start gap-3"><MapPin size={20} className="text-yellow-400 mt-1 shrink-0" /><div><span className="block font-bold text-white">Visit</span><span className="text-sm text-pink-100/80">2/337/D6, State Bank Colony, Sivakasi - 626 129</span></div></div>
             </div>
           </div>
           <div className="space-y-6">
