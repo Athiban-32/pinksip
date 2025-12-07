@@ -2,15 +2,14 @@ import React, { useState, useEffect, useRef } from 'react';
 import { 
   Menu, X, Droplet, Heart, Snowflake, Instagram, ArrowRight, 
   ShoppingBag, Send, MapPin, Phone, Mail, Star, CheckCircle2, 
-  ArrowUpRight 
+  ArrowUpRight, Check 
 } from 'lucide-react';
 import { FaWhatsapp } from 'react-icons/fa';
 import { motion, useScroll, useTransform } from 'framer-motion';
 
 // --- IMAGE IMPORTS ---
-// 1. Product Image (ensure in src/assets/)
+// Make sure these paths match your project structure
 import productImg from './assets/pinksip_bottle.png'; 
-// 2. Logo Image (ensure in src root or adjust path)
 import logoImg from './pinksiplogos1.png';
 
 // --- CUSTOM STYLES & ANIMATIONS ---
@@ -18,45 +17,32 @@ const customStyles = `
   html { scroll-behavior: smooth; }
 
   /* --- BOTTLE & LIQUID ANIMATIONS --- */
-  
-  /* Liquid filling up from bottom */
   @keyframes rise-liquid {
     0% { height: 0%; }
     100% { height: 85%; } 
   }
-
-  /* Gentle wave on top of liquid */
   @keyframes surface-wobble {
     0% { transform: skewX(0deg); }
     25% { transform: skewX(-2deg); }
     75% { transform: skewX(2deg); }
     100% { transform: skewX(0deg); }
   }
-
-  /* Straw Drop Animation */
   @keyframes straw-entry {
     0% { transform: translateY(-400px) rotate(15deg); opacity: 0; }
     60% { transform: translateY(10px) rotate(8deg); opacity: 1; }
     80% { transform: translateY(-15px) rotate(8deg); }
     100% { transform: translateY(0) rotate(8deg); opacity: 1; }
   }
-
-  /* Bubbles rising */
   @keyframes speck-rise {
     0% { transform: translateY(0) scale(1); opacity: 0.8; }
     100% { transform: translateY(-120px) scale(0); opacity: 0; }
   }
-
-  /* --- GENERAL UI ANIMATIONS --- */
-  
-  /* Rose Petal Drift */
   @keyframes drift {
     0% { transform: translateX(0) translateY(0) rotate(-5deg); opacity: 0; }
     10% { opacity: 1; }
     90% { opacity: 1; }
     100% { transform: translateX(100vw) translateY(-50px) rotate(360deg); opacity: 0; }
   }
-
   @keyframes float {
     0% { transform: translateY(0px) rotate(0deg); }
     50% { transform: translateY(-15px) rotate(5deg); }
@@ -168,8 +154,8 @@ const BottlePreloader = ({ finishLoading }) => {
             <g clipPath="url(#bottle-clip)">
               <foreignObject x="0" y="0" width="100" height="200">
                 <div className="w-full h-full flex flex-col justify-end">
-                   <div className="w-full bg-pink-400 relative"
-                        style={{ animation: 'rise-liquid 2.5s ease-out forwards 0.5s', height: '0%' }}>
+                    <div className="w-full bg-pink-400 relative"
+                         style={{ animation: 'rise-liquid 2.5s ease-out forwards 0.5s', height: '0%' }}>
                         <div className="absolute inset-0 w-full h-full opacity-60" 
                              style={{ backgroundImage: 'radial-gradient(#be185d 1px, transparent 1px)', backgroundSize: '12px 12px' }}></div>
                         <div className="absolute top-0 left-0 w-full h-2 bg-pink-300 opacity-50 blur-[1px]" 
@@ -177,7 +163,7 @@ const BottlePreloader = ({ finishLoading }) => {
                         <div className="absolute bottom-10 left-4 w-1 h-1 bg-rose-700 rounded-full" style={{ animation: 'speck-rise 4s infinite' }}></div>
                         <div className="absolute bottom-20 left-12 w-1.5 h-1.5 bg-rose-800 rounded-full" style={{ animation: 'speck-rise 3s infinite 0.5s' }}></div>
                         <div className="absolute bottom-5 left-16 w-1 h-1 bg-rose-600 rounded-full" style={{ animation: 'speck-rise 5s infinite 1s' }}></div>
-                   </div>
+                    </div>
                 </div>
               </foreignObject>
             </g>
@@ -224,12 +210,10 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center">
           
-          {/* UPDATED LOGO SECTION - INCREASED SIZE */}
           <div className="flex-shrink-0 flex items-center cursor-pointer">
              <img 
                src={logoImg} 
                alt="Pink Sip" 
-               // Changed h-12 to h-16 for a larger logo
                className="h-16 w-auto object-contain hover:scale-105 transition-transform duration-300" 
              />
           </div>
@@ -444,7 +428,44 @@ const Ingredients = () => {
     );
 };
 
+// --- UPDATED CONTACT SECTION WITH FORMDATA FIX ---
 const Contact = () => {
+  // Use your specific Web App URL here
+  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxi-JgFNvBo67PXK19_X3rej_MhJZWdIRJ_cltlp--ODfIq_7RLN9Ab9p53vOpPdUgx/exec"; 
+
+  const [formData, setFormData] = useState({ name: '', phone: '', message: '' });
+  const [status, setStatus] = useState('idle'); // idle, submitting, success, error
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setStatus('submitting');
+
+    // --- FIX: USE FORMDATA INSTEAD OF JSON ---
+    const data = new FormData();
+    data.append('name', formData.name);
+    data.append('phone', formData.phone);
+    data.append('message', formData.message);
+
+    try {
+      await fetch(GOOGLE_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors', // Standard for Google Sheets
+        body: data // Sending the FormData object directly
+        // Note: Do NOT set Content-Type header here; fetch sets it automatically for FormData
+      });
+      
+      setStatus('success');
+      setFormData({ name: '', phone: '', message: '' });
+    } catch (error) {
+      console.error("Error submitting form", error);
+      setStatus('error');
+    }
+  };
+
   return (
     <section id="contact" className="py-24 relative bg-pink-50/50">
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -457,29 +478,80 @@ const Contact = () => {
         </div>
         <div className="reveal-hidden">
           <div className="grid md:grid-cols-2 gap-8 mb-12">
-            <div className="bg-white/40 p-8 rounded-3xl border border-white/50 shadow-xl backdrop-blur-sm h-full">
-               <h3 className="text-xl font-bold text-gray-800 mb-6">Send a Message</h3>
-               <form className="space-y-5">
-                 <div className="space-y-2">
-                   <label className="text-xs font-bold text-gray-500 uppercase tracking-wide ml-1">Your Name</label>
-                   <input type="text" className="w-full glass-input px-4 py-3 rounded-xl text-sm text-gray-800 focus:outline-none" placeholder="Name" />
+            <div className="bg-white/40 p-8 rounded-3xl border border-white/50 shadow-xl backdrop-blur-sm h-full flex flex-col justify-center">
+               
+               {/* --- CONDITIONAL RENDERING FOR THANK YOU PAGE --- */}
+               {status === 'success' ? (
+                 <div className="text-center py-12 animate-float">
+                   <div className="inline-flex items-center justify-center w-20 h-20 bg-green-100 rounded-full mb-6">
+                     <Check size={40} className="text-green-600" />
+                   </div>
+                   <h3 className="text-2xl font-bold text-gray-900 mb-2">Thank You!</h3>
+                   <p className="text-gray-600 mb-6">We have received your message and will get back to you shortly.</p>
+                   <button 
+                     onClick={() => setStatus('idle')}
+                     className="text-pink-600 font-bold hover:text-pink-800 underline"
+                   >
+                     Send another message
+                   </button>
                  </div>
-                 <div className="space-y-2">
-                   <label className="text-xs font-bold text-gray-500 uppercase tracking-wide ml-1">Phone Number</label>
-                   <input type="tel" className="w-full glass-input px-4 py-3 rounded-xl text-sm text-gray-800 focus:outline-none" placeholder="+91 8807869898" />
-                 </div>
-                 <div className="space-y-2">
-                   <label className="text-xs font-bold text-gray-500 uppercase tracking-wide ml-1">Message</label>
-                   <textarea rows="4" className="w-full glass-input px-4 py-3 rounded-xl text-sm text-gray-800 focus:outline-none resize-none" placeholder="Tell us something..."></textarea>
-                 </div>
-                 <button className="w-full bg-gray-900 hover:bg-pink-600 text-white font-bold py-4 rounded-xl shadow-lg transform active:scale-95 transition-all flex items-center justify-center gap-2 text-sm group">
-                   Send Message <Send size={16} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-                 </button>
-               </form>
+               ) : (
+                 <>
+                   <h3 className="text-xl font-bold text-gray-800 mb-6">Send a Message</h3>
+                   <form className="space-y-5" onSubmit={handleSubmit}>
+                     <div className="space-y-2">
+                       <label className="text-xs font-bold text-gray-500 uppercase tracking-wide ml-1">Your Name</label>
+                       <input 
+                         required
+                         type="text" 
+                         name="name"
+                         value={formData.name}
+                         onChange={handleChange}
+                         className="w-full glass-input px-4 py-3 rounded-xl text-sm text-gray-800 focus:outline-none" 
+                         placeholder="Name" 
+                       />
+                     </div>
+                     <div className="space-y-2">
+                       <label className="text-xs font-bold text-gray-500 uppercase tracking-wide ml-1">Phone Number</label>
+                       <input 
+                         required
+                         type="tel" 
+                         name="phone"
+                         value={formData.phone}
+                         onChange={handleChange}
+                         className="w-full glass-input px-4 py-3 rounded-xl text-sm text-gray-800 focus:outline-none" 
+                         placeholder="+91 8807869898" 
+                       />
+                     </div>
+                     <div className="space-y-2">
+                       <label className="text-xs font-bold text-gray-500 uppercase tracking-wide ml-1">Message</label>
+                       <textarea 
+                         required
+                         rows="4" 
+                         name="message"
+                         value={formData.message}
+                         onChange={handleChange}
+                         className="w-full glass-input px-4 py-3 rounded-xl text-sm text-gray-800 focus:outline-none resize-none" 
+                         placeholder="Tell us something..."
+                       ></textarea>
+                     </div>
+                     <button 
+                       type="submit" 
+                       disabled={status === 'submitting'}
+                       className={`w-full bg-gray-900 hover:bg-pink-600 text-white font-bold py-4 rounded-xl shadow-lg transform active:scale-95 transition-all flex items-center justify-center gap-2 text-sm group ${status === 'submitting' ? 'opacity-70 cursor-wait' : ''}`}
+                     >
+                       {status === 'submitting' ? 'Sending...' : 'Send Message'} 
+                       {!status === 'submitting' && <Send size={16} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />}
+                     </button>
+                     {status === 'error' && <p className="text-red-500 text-center text-xs mt-2">Something went wrong. Please try again.</p>}
+                   </form>
+                 </>
+               )}
+
             </div>
             <div className="glass-card bg-white rounded-3xl overflow-hidden border border-white/50 h-full min-h-[400px] shadow-xl relative">
               <iframe 
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3933.447078502623!2d77.8056743!3d9.4536873!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3b06cf0044231561%3A0x671614574879128!2s2%2F337%2C%20State%20Bank%20Colony%2C%20Sivakasi%2C%20Tamil%20Nadu%20626123!5e0!3m2!1sen!2sin!4v1718638723845!5m2!1sen!2sin"
+                src="https://maps.google.com/maps?q=2%2F337%2FD6%2C+State+Bank+Colony%2C+Sivakasi+-+626+129&t=&z=15&ie=UTF8&iwloc=&output=embed"
                 width="100%" 
                 height="100%" 
                 style={{border:0}} 
