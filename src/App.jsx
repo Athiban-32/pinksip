@@ -297,7 +297,7 @@ const Hero = () => {
             <div className="relative z-20" style={{ transform: `translate(${mousePos.x * -1.5}px, ${mousePos.y * -1.5}px)` }}>
                 <div className="relative group">
                   <div className="absolute inset-0 bg-pink-500 rounded-full blur-[60px] opacity-20 group-hover:opacity-30 transition-opacity duration-500"></div>
-                  <img src="https://img.freepik.com/free-photo/front-view-pink-smoothie-bottle-with-straw_23-2148526544.jpg?t=st=1764726799~exp=1764730399~hmac=4760ab1f1aaf3af0dbcd333ceeaca4cafaa7651c7604da1b762fb301b4035419&w=1480" 
+                  <img src="https://img.freepik.com/free-photo/high-angle-healthy-pink-smoothie_23-2148226032.jpg?t=st=1765096338~exp=1765099938~hmac=3236137b0c4e8f2767febf89bd5d246df968079e2a0373276a4783be4b1c3f6b&w=1480" 
                     alt="Pink Sip Rose Milk Bottle" 
                     className="animate-bottle-enter relative w-64 md:w-80 h-auto object-cover rounded-3xl shadow-2xl transform transition-all duration-1000 ease-out hover:scale-105"
                     style={{ maskImage: 'linear-gradient(to bottom, black 85%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to bottom, black 85%, transparent 100%)' }}
@@ -427,7 +427,7 @@ const Ingredients = () => {
                 <div className="absolute top-0 left-0 w-full h-full pointer-events-none z-0 flex items-center justify-center overflow-hidden">
                     <motion.div style={{ y, scale, rotate }} className="relative top-24 md:top-0">
                         <div className="absolute inset-0 bg-rose-500/20 blur-[80px] rounded-full"></div>
-                        <img src="https://img.freepik.com/free-photo/front-view-pink-smoothie-bottle-with-straw_23-2148526544.jpg?t=st=1764726799~exp=1764730399~hmac=4760ab1f1aaf3af0dbcd333ceeaca4cafaa7651c7604da1b762fb301b4035419&w=1480"
+                        <img src="https://img.freepik.com/free-photo/high-angle-healthy-pink-smoothie_23-2148226032.jpg?t=st=1765096338~exp=1765099938~hmac=3236137b0c4e8f2767febf89bd5d246df968079e2a0373276a4783be4b1c3f6b&w=1480"
                             alt="Central Bottle" className="h-[400px] md:h-[600px] object-cover rounded-full opacity-90"
                             style={{ maskImage: 'linear-gradient(to bottom, black 80%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to bottom, black 80%, transparent 100%)' }}
                         />
