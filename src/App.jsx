@@ -428,7 +428,7 @@ const Ingredients = () => {
     );
 };
 
-// --- UPDATED CONTACT SECTION WITH FORMDATA FIX ---
+
 const Contact = () => {
   // Use your specific Web App URL here
   const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxi-JgFNvBo67PXK19_X3rej_MhJZWdIRJ_cltlp--ODfIq_7RLN9Ab9p53vOpPdUgx/exec"; 
@@ -595,7 +595,7 @@ const Footer = () => {
                <div className="flex items-start gap-3"><Phone size={20} className="text-pink-400 mt-1 shrink-0" /><div><span className="block font-bold text-white">Call</span><a href="tel:+918807869898" className="text-sm text-pink-100/80 hover:text-white transition-colors">+91 8807869898</a></div></div>
                <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="flex items-start gap-3 group"><FaWhatsapp size={20} className="text-green-400 mt-1 shrink-0 group-hover:scale-110 transition-transform" /><div><span className="block font-bold text-white group-hover:text-green-400 transition-colors">WhatsApp</span><span className="text-sm text-pink-100/80 group-hover:text-white transition-colors">+91 8807869898</span></div></a>
                <div className="flex items-start gap-3"><Mail size={20} className="text-blue-400 mt-1 shrink-0" /><div><span className="block font-bold text-white">Email</span><span className="text-sm text-pink-100/80">care@thebrewbeverages.com</span></div></div>
-               <div className="flex items-start gap-3"><MapPin size={20} className="text-yellow-400 mt-1 shrink-0" /><div><span className="block font-bold text-white">Visit</span><span className="text-sm text-pink-100/80">2/337/D6, State Bank Colony, Sivakasi - 626 129</span></div></div>
+               <div className="flex items-start gap-3"><MapPin size={20} className="text-yellow-400 mt-1 shrink-0" /><div><span className="block font-bold text-white">Visit</span><span className="text-sm text-pink-100/80">Sivakasi, Tamilnadu, India</span></div></div>
             </div>
           </div>
           <div className="space-y-6">
