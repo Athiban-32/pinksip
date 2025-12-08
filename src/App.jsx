@@ -11,6 +11,8 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 // Make sure these paths match your project structure
 import productImg from './assets/pinksip_bottle.png'; 
 import logoImg from './pinksiplogos1.png';
+// NEW IMPORT FOR THE LOCAL IMAGE
+import roseMilkImg from './assets/rosemilk.jpg'; 
 
 // --- CUSTOM STYLES & ANIMATIONS ---
 const customStyles = `
@@ -197,7 +199,7 @@ const WaveSeparator = () => (
   </div>
 );
 
-// --- NAVBAR (Fixed for Mobile Visibility & No Collision) ---
+// --- NAVBAR (Fixed: Mobile Visible, No Laptop Collision) ---
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -218,13 +220,13 @@ const Navbar = () => {
              <img 
                src={logoImg} 
                alt="Pink Sip" 
-               // Responsive size: h-12 on mobile (smaller), h-16 on desktop (normal)
+               // Size adjustment for mobile vs desktop
                className="h-12 md:h-16 w-auto object-contain hover:scale-105 transition-transform duration-300" 
              />
           </div>
 
           {/* 2. CENTER: BUSINESS NAME (ABSOLUTE) */}
-          {/* VISIBLE ON MOBILE NOW. text-[10px] ensures it fits on small screens. */}
+          {/* Visible on ALL screens. Text size adjusts to fit mobile. Pointer events none to allow clicks through. */}
           <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
             <h1 className="text-[10px] xs:text-xs sm:text-lg md:text-xl lg:text-2xl font-serif font-bold text-pink-900 tracking-[0.15em] uppercase pointer-events-auto whitespace-nowrap">
               The Brew Beverages
@@ -232,7 +234,7 @@ const Navbar = () => {
           </div>
 
           {/* 3. RIGHT: NAVIGATION LINKS */}
-          {/* Hidden on laptops (up to 1536px) to give text room */}
+          {/* Hidden on laptops (up to 1536px) to avoid collision with name */}
           <div className="hidden 2xl:flex items-center space-x-8 z-30">
             {['Home', 'Products', 'Ingredients', 'Contact'].map((item) => (
               <a key={item} href={`#${item.toLowerCase().replace(' ', '-')}`} className="text-gray-700 hover:text-pink-600 font-medium transition-colors relative group">
@@ -305,7 +307,8 @@ const Hero = () => {
             <div className="relative z-20" style={{ transform: `translate(${mousePos.x * -1.5}px, ${mousePos.y * -1.5}px)` }}>
                 <div className="relative group">
                   <div className="absolute inset-0 bg-pink-500 rounded-full blur-[60px] opacity-20 group-hover:opacity-30 transition-opacity duration-500"></div>
-                  <img src="https://img.freepik.com/free-photo/high-angle-healthy-pink-smoothie_23-2148226032.jpg?t=st=1765096338~exp=1765099938~hmac=3236137b0c4e8f2767febf89bd5d246df968079e2a0373276a4783be4b1c3f6b&w=1480" 
+                  {/* UPDATED IMAGE HERE */}
+                  <img src={roseMilkImg} 
                     alt="Pink Sip Rose Milk Bottle" 
                     className="animate-bottle-enter relative w-64 md:w-80 h-auto object-cover rounded-3xl shadow-2xl transform transition-all duration-1000 ease-out hover:scale-105"
                     style={{ maskImage: 'linear-gradient(to bottom, black 85%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to bottom, black 85%, transparent 100%)' }}
@@ -435,7 +438,8 @@ const Ingredients = () => {
                 <div className="absolute top-0 left-0 w-full h-full pointer-events-none z-0 flex items-center justify-center overflow-hidden">
                     <motion.div style={{ y, scale, rotate }} className="relative top-24 md:top-0">
                         <div className="absolute inset-0 bg-rose-500/20 blur-[80px] rounded-full"></div>
-                        <img src="https://img.freepik.com/free-photo/high-angle-healthy-pink-smoothie_23-2148226032.jpg?t=st=1765096338~exp=1765099938~hmac=3236137b0c4e8f2767febf89bd5d246df968079e2a0373276a4783be4b1c3f6b&w=1480"
+                        {/* UPDATED IMAGE HERE */}
+                        <img src={roseMilkImg}
                             alt="Central Bottle" className="h-[400px] md:h-[600px] object-cover rounded-full opacity-90"
                             style={{ maskImage: 'linear-gradient(to bottom, black 80%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to bottom, black 80%, transparent 100%)' }}
                         />
