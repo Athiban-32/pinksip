@@ -197,7 +197,7 @@ const WaveSeparator = () => (
   </div>
 );
 
-// --- NAVBAR (Fixed to prevent Collision) ---
+// --- NAVBAR (Fixed for Mobile Visibility & No Collision) ---
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -218,23 +218,21 @@ const Navbar = () => {
              <img 
                src={logoImg} 
                alt="Pink Sip" 
-               className="h-16 w-auto object-contain hover:scale-105 transition-transform duration-300" 
+               // Responsive size: h-12 on mobile (smaller), h-16 on desktop (normal)
+               className="h-12 md:h-16 w-auto object-contain hover:scale-105 transition-transform duration-300" 
              />
           </div>
 
           {/* 2. CENTER: BUSINESS NAME (ABSOLUTE) */}
-          {/* Positioned absolutely to ensure it is always centered regardless of other elements */}
-          {/* pointer-events-none ensures clicks pass through to elements below if they overlap */}
+          {/* VISIBLE ON MOBILE NOW. text-[10px] ensures it fits on small screens. */}
           <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
-            {/* hidden sm:block ensures it hides on tiny mobile screens, but shows on all others */}
-            <h1 className="hidden sm:block text-lg md:text-xl lg:text-2xl font-serif font-bold text-pink-900 tracking-[0.15em] uppercase pointer-events-auto whitespace-nowrap">
+            <h1 className="text-[10px] xs:text-xs sm:text-lg md:text-xl lg:text-2xl font-serif font-bold text-pink-900 tracking-[0.15em] uppercase pointer-events-auto whitespace-nowrap">
               The Brew Beverages
             </h1>
           </div>
 
           {/* 3. RIGHT: NAVIGATION LINKS */}
-          {/* FIX: 'hidden 2xl:flex' -> This hides the text links on Laptops (1024px-1535px) */}
-          {/* They only appear on very large screens (1536px+) where there is enough room */}
+          {/* Hidden on laptops (up to 1536px) to give text room */}
           <div className="hidden 2xl:flex items-center space-x-8 z-30">
             {['Home', 'Products', 'Ingredients', 'Contact'].map((item) => (
               <a key={item} href={`#${item.toLowerCase().replace(' ', '-')}`} className="text-gray-700 hover:text-pink-600 font-medium transition-colors relative group">
@@ -246,10 +244,10 @@ const Navbar = () => {
           </div>
 
           {/* 4. RIGHT: HAMBURGER MENU BUTTON */}
-          {/* FIX: '2xl:hidden' -> This shows the hamburger button on Laptops/Tablets/Mobile */}
+          {/* Visible on Mobile, Tablets, and Laptops */}
           <div className="2xl:hidden flex items-center z-30">
             <button onClick={() => setIsOpen(!isOpen)} className="text-pink-800 bg-white/50 p-2 rounded-full backdrop-blur-sm hover:bg-white/80 transition-colors">
-              {isOpen ? <X size={28} /> : <Menu size={28} />}
+              {isOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
 
@@ -260,11 +258,6 @@ const Navbar = () => {
       <div className={`2xl:hidden absolute w-full glass-panel transition-all duration-300 ease-in-out ${isOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0 overflow-hidden'}`}>
         <div className="px-4 pt-2 pb-6 space-y-2 bg-white/95 backdrop-blur-md shadow-lg border-t border-pink-100">
           
-          {/* Show name inside menu for small mobile screens only */}
-          <div className="text-center py-3 border-b border-pink-100 mb-2 sm:hidden">
-            <span className="font-serif font-bold text-pink-900 tracking-widest uppercase text-lg">The Brew Beverages</span>
-          </div>
-
           {['Home', 'Products', 'Ingredients', 'Contact'].map((item) => (
             <a key={item} href={`#${item.toLowerCase().replace(' ', '-')}`} onClick={() => setIsOpen(false)} className="block px-3 py-3 text-pink-900 font-medium hover:bg-pink-50 rounded-lg transition-colors">{item}</a>
           ))}
