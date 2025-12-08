@@ -264,7 +264,7 @@ const Hero = () => {
               <Star size={12} fill="currentColor" /> Premium Rose Milk
             </div>
             <h1 className="text-5xl md:text-7xl font-bold text-gray-900 leading-[1.1]">
-              Sip the <br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-rose-600">Pink Magic</span>
+              The Brew <br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-rose-600">Something new in every sip</span>
             </h1>
             <p className="text-xl text-gray-600 max-w-lg mx-auto md:mx-0 leading-relaxed">Authentic paneer rose essence blended with farm-fresh milk. No preservatives, just pure chilled nostalgia.</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
