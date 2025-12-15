@@ -8,10 +8,8 @@ import { FaWhatsapp } from 'react-icons/fa';
 import { motion, useScroll, useTransform } from 'framer-motion';
 
 // --- IMAGE IMPORTS ---
-// Make sure these paths match your project structure
 import productImg from './assets/pinksip_bottle.png'; 
 import logoImg from './pinksiplogos1.png';
-// NEW IMPORT FOR THE LOCAL IMAGE
 import roseMilkImg from './assets/rosemilk.jpg'; 
 
 // --- CUSTOM STYLES & ANIMATIONS ---
@@ -68,15 +66,15 @@ const customStyles = `
   .animate-float { animation: float 6s ease-in-out infinite; }
   .animate-liquid-pulse { animation: liquid-pulse 2s infinite; }
   .animate-bottle-enter { animation: bottle-enter 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; opacity: 0; animation-delay: 0.2s; }
-  
+   
   .shimmer-btn { background: linear-gradient(to right, #ec4899 4%, #f472b6 25%, #ec4899 36%); background-size: 1000px 100%; animation: shimmer 3s infinite linear; }
-  
+   
   .glass-panel { background: rgba(255, 255, 255, 0.25); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.4); }
   .glass-card { background: linear-gradient(135deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.2) 100%); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.6); box-shadow: 0 8px 32px 0 rgba(236, 72, 153, 0.1); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
   .glass-card:hover { transform: translateY(-12px) scale(1.02); box-shadow: 0 25px 50px -12px rgba(236, 72, 153, 0.25); border-color: #f9a8d4; }
   .glass-input { background: rgba(255, 255, 255, 0.5); border: 1px solid rgba(255, 255, 255, 0.5); backdrop-filter: blur(5px); transition: all 0.3s ease; }
   .glass-input:focus { background: rgba(255, 255, 255, 0.9); border-color: #ec4899; box-shadow: 0 0 0 4px rgba(236, 72, 153, 0.15); }
-  
+   
   .reveal-hidden { opacity: 0; transform: translateY(40px); transition: all 1s ease-out; }
   .reveal-visible { opacity: 1; transform: translateY(0); }
 `;
@@ -189,6 +187,37 @@ const BottlePreloader = ({ finishLoading }) => {
   );
 };
 
+// --- FLOATING WHATSAPP BUTTON ---
+const FloatingWhatsAppButton = () => {
+  // Encoded message: "Hi Pink Sip, I would like to place an order"
+  const message = "Hi Pink Sip, I would like to place an order";
+  const encodedMessage = encodeURIComponent(message);
+  const phoneNumber = "918807869898";
+  const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+
+  return (
+    <a
+      href={whatsappUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="fixed bottom-6 right-6 z-[60] group flex items-center justify-center"
+    >
+      {/* Tooltip Text */}
+      <span className="absolute right-full mr-3 bg-white text-pink-900 text-xs font-bold px-3 py-2 rounded-xl shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap border border-pink-100">
+        Order via WhatsApp
+      </span>
+      
+      {/* Button */}
+      <div className="w-14 h-14 bg-[#25D366] rounded-full flex items-center justify-center shadow-2xl hover:scale-110 hover:shadow-[#25D366]/50 transition-all duration-300">
+        <FaWhatsapp className="text-white w-8 h-8" />
+      </div>
+      
+      {/* Ping Animation */}
+      <span className="absolute inline-flex h-full w-full rounded-full bg-[#25D366] opacity-75 animate-ping -z-10"></span>
+    </a>
+  );
+};
+
 // --- MAIN COMPONENTS ---
 
 const WaveSeparator = () => (
@@ -199,7 +228,7 @@ const WaveSeparator = () => (
   </div>
 );
 
-// --- NAVBAR (Fixed: Mobile Visible, No Laptop Collision) ---
+// --- NAVBAR ---
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -215,26 +244,20 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center relative h-16">
           
-          {/* 1. LEFT: LOGO */}
           <div className="flex-shrink-0 flex items-center cursor-pointer z-30">
              <img 
                src={logoImg} 
                alt="Pink Sip" 
-               // Size adjustment for mobile vs desktop
                className="h-12 md:h-16 w-auto object-contain hover:scale-105 transition-transform duration-300" 
              />
           </div>
 
-          {/* 2. CENTER: BUSINESS NAME (ABSOLUTE) */}
-          {/* Visible on ALL screens. Text size adjusts to fit mobile. Pointer events none to allow clicks through. */}
           <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
             <h1 className="text-[10px] xs:text-xs sm:text-lg md:text-xl lg:text-2xl font-serif font-bold text-pink-900 tracking-[0.15em] uppercase pointer-events-auto whitespace-nowrap">
               The Brew Beverages
             </h1>
           </div>
 
-          {/* 3. RIGHT: NAVIGATION LINKS */}
-          {/* Hidden on laptops (up to 1536px) to avoid collision with name */}
           <div className="hidden 2xl:flex items-center space-x-8 z-30">
             {['Home', 'Products', 'Ingredients', 'Contact'].map((item) => (
               <a key={item} href={`#${item.toLowerCase().replace(' ', '-')}`} className="text-gray-700 hover:text-pink-600 font-medium transition-colors relative group">
@@ -245,8 +268,6 @@ const Navbar = () => {
             <a href="#contact" className="shimmer-btn text-white px-6 py-2 rounded-full font-medium transition-all shadow-lg hover:shadow-pink-300/50 transform hover:-translate-y-0.5 active:scale-95 cursor-pointer flex items-center justify-center">Order Now</a>
           </div>
 
-          {/* 4. RIGHT: HAMBURGER MENU BUTTON */}
-          {/* Visible on Mobile, Tablets, and Laptops */}
           <div className="2xl:hidden flex items-center z-30">
             <button onClick={() => setIsOpen(!isOpen)} className="text-pink-800 bg-white/50 p-2 rounded-full backdrop-blur-sm hover:bg-white/80 transition-colors">
               {isOpen ? <X size={24} /> : <Menu size={24} />}
@@ -256,7 +277,6 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* MOBILE / LAPTOP MENU DROPDOWN */}
       <div className={`2xl:hidden absolute w-full glass-panel transition-all duration-300 ease-in-out ${isOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0 overflow-hidden'}`}>
         <div className="px-4 pt-2 pb-6 space-y-2 bg-white/95 backdrop-blur-md shadow-lg border-t border-pink-100">
           
@@ -307,7 +327,6 @@ const Hero = () => {
             <div className="relative z-20" style={{ transform: `translate(${mousePos.x * -1.5}px, ${mousePos.y * -1.5}px)` }}>
                 <div className="relative group">
                   <div className="absolute inset-0 bg-pink-500 rounded-full blur-[60px] opacity-20 group-hover:opacity-30 transition-opacity duration-500"></div>
-                  {/* UPDATED IMAGE HERE */}
                   <img src={roseMilkImg} 
                     alt="Pink Sip Rose Milk Bottle" 
                     className="animate-bottle-enter relative w-64 md:w-80 h-auto object-cover rounded-3xl shadow-2xl transform transition-all duration-1000 ease-out hover:scale-105"
@@ -371,8 +390,8 @@ const Products = () => {
               <div className={`h-56 ${item.color} rounded-3xl mb-6 flex items-center justify-center relative overflow-hidden`}>
                  <div className="absolute inset-0 bg-white/30 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                  <img src={productImg} 
-                       alt={item.name} 
-                       className="h-48 w-auto object-contain drop-shadow-xl transform group-hover:scale-110 group-hover:-rotate-6 group-hover:-translate-y-2 transition-all duration-500 ease-out" />
+                        alt={item.name} 
+                        className="h-48 w-auto object-contain drop-shadow-xl transform group-hover:scale-110 group-hover:-rotate-6 group-hover:-translate-y-2 transition-all duration-500 ease-out" />
               </div>
               <div className="flex justify-between items-end">
                 <div><h3 className="text-xl font-bold text-gray-800">{item.name}</h3><p className="text-gray-500 text-sm mt-1">{item.size}</p></div>
@@ -438,7 +457,6 @@ const Ingredients = () => {
                 <div className="absolute top-0 left-0 w-full h-full pointer-events-none z-0 flex items-center justify-center overflow-hidden">
                     <motion.div style={{ y, scale, rotate }} className="relative top-24 md:top-0">
                         <div className="absolute inset-0 bg-rose-500/20 blur-[80px] rounded-full"></div>
-                        {/* UPDATED IMAGE HERE */}
                         <img src={roseMilkImg}
                             alt="Central Bottle" className="h-[400px] md:h-[600px] object-cover rounded-full opacity-90"
                             style={{ maskImage: 'linear-gradient(to bottom, black 80%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to bottom, black 80%, transparent 100%)' }}
@@ -458,7 +476,6 @@ const Ingredients = () => {
 
 
 const Contact = () => {
-  // Use your specific Web App URL here
   const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxi-JgFNvBo67PXK19_X3rej_MhJZWdIRJ_cltlp--ODfIq_7RLN9Ab9p53vOpPdUgx/exec"; 
 
   const [formData, setFormData] = useState({ name: '', phone: '', message: '' });
@@ -472,7 +489,6 @@ const Contact = () => {
     e.preventDefault();
     setStatus('submitting');
 
-    // --- FIX: USE FORMDATA INSTEAD OF JSON ---
     const data = new FormData();
     data.append('name', formData.name);
     data.append('phone', formData.phone);
@@ -481,9 +497,8 @@ const Contact = () => {
     try {
       await fetch(GOOGLE_SCRIPT_URL, {
         method: 'POST',
-        mode: 'no-cors', // Standard for Google Sheets
-        body: data // Sending the FormData object directly
-        // Note: Do NOT set Content-Type header here; fetch sets it automatically for FormData
+        mode: 'no-cors', 
+        body: data 
       });
       
       setStatus('success');
@@ -508,7 +523,6 @@ const Contact = () => {
           <div className="grid md:grid-cols-2 gap-8 mb-12">
             <div className="bg-white/40 p-8 rounded-3xl border border-white/50 shadow-xl backdrop-blur-sm h-full flex flex-col justify-center">
                
-               {/* --- CONDITIONAL RENDERING FOR THANK YOU PAGE --- */}
                {status === 'success' ? (
                  <div className="text-center py-12 animate-float">
                    <div className="inline-flex items-center justify-center w-20 h-20 bg-green-100 rounded-full mb-6">
@@ -568,8 +582,15 @@ const Contact = () => {
                        disabled={status === 'submitting'}
                        className={`w-full bg-gray-900 hover:bg-pink-600 text-white font-bold py-4 rounded-xl shadow-lg transform active:scale-95 transition-all flex items-center justify-center gap-2 text-sm group ${status === 'submitting' ? 'opacity-70 cursor-wait' : ''}`}
                      >
-                       {status === 'submitting' ? 'Sending...' : 'Send Message'} 
-                       {!status === 'submitting' && <Send size={16} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />}
+                       {status === 'submitting' ? 'Sending...' : 'Send Message'}
+                       
+                       {status !== 'submitting' && (
+                         <Send 
+                           size={18} 
+                           strokeWidth={2.5} 
+                           className="mt-1 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" 
+                         />
+                       )}
                      </button>
                      {status === 'error' && <p className="text-red-500 text-center text-xs mt-2">Something went wrong. Please try again.</p>}
                    </form>
@@ -659,6 +680,8 @@ const App = () => {
       {loading && <BottlePreloader finishLoading={() => setLoading(false)} />}
       <div className={`transition-opacity duration-1000 ${loading ? 'opacity-0 h-0 overflow-hidden' : 'opacity-100'}`}>
         <Navbar />
+        {/* Floating Button */}
+        <FloatingWhatsAppButton /> 
         <main>
           <Hero />
           <Features />
