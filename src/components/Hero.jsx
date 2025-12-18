@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Star, ShoppingBag, ArrowRight, Droplet, Heart, CheckCircle2 } from 'lucide-react';
 import roseMilkImg from '../assets/rosemilk.jpg';
+import paneerRoseSvg from '../assets/paneer_rose.png';
 
 // Animation Components (Kept same as your original)
 const FloatingPetal = ({ delay, duration, size, top }) => (
@@ -13,7 +14,13 @@ const FloatingPetal = ({ delay, duration, size, top }) => (
       left: '-10%'
     }}
   >
-    <div className={`text-pink-300 transform rotate-45 drop-shadow-sm`} style={{ fontSize: `${size}px` }}>🪷</div>
+    {/* Replaced Emoji with Image */}
+    <img 
+      src={paneerRoseSvg} 
+      alt="Rose Petal"
+      className="transform rotate-45 drop-shadow-sm mix-blend-multiply"
+      style={{ width: `${size}px`, height: 'auto'}} 
+    />
   </div>
 );
 
@@ -41,9 +48,9 @@ const Hero = () => {
         <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-rose-300/30 rounded-full mix-blend-multiply filter blur-[80px] opacity-40 animate-float" style={{ animationDelay: '2s', transform: `translate(${mousePos.x * -1}px, ${mousePos.y * -1}px)` }}></div>
         
         {/* Petals */}
-        <FloatingPetal delay={0} duration={15} size={24} top={20} />
-        <FloatingPetal delay={5} duration={18} size={32} top={60} />
-        <FloatingPetal delay={2} duration={20} size={20} top={40} />
+        <FloatingPetal delay={0} duration={15} size={28} top={20} />
+        <FloatingPetal delay={5} duration={18} size={36} top={60} />
+        <FloatingPetal delay={2} duration={20} size={24} top={40} />
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full mb-12">

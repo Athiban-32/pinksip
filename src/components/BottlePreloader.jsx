@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import paneerRoseSvg from '../assets/paneer_rose.png';
 
 const FloatingPetal = ({ delay, duration, size, top }) => (
   <div
@@ -10,7 +11,13 @@ const FloatingPetal = ({ delay, duration, size, top }) => (
       left: '-10%'
     }}
   >
-    <div className={`text-pink-300 transform rotate-45 drop-shadow-sm`} style={{ fontSize: `${size}px` }}>🪷</div>
+    <img
+        src={paneerRoseSvg}
+        alt="Paneer Rose"
+        className="transform rotate-45 drop-shadow-sm"
+        // 3. Used the 'size' prop to define image width instead of font-size
+        style={{ width: `${size}px`, height: 'auto' }}
+    />
   </div>
 );
 
@@ -23,11 +30,12 @@ const BottlePreloader = ({ finishLoading }) => {
   return (
     <div className="fixed inset-0 z-[100] bg-pink-50 flex flex-col items-center justify-center overflow-hidden">
       <div className="absolute inset-0 pointer-events-none w-full h-full">
-         <FloatingPetal delay={0} duration={6} size={30} top={20} />
-         <FloatingPetal delay={2} duration={8} size={20} top={80} />
-         <FloatingPetal delay={1} duration={7} size={25} top={50} />
-         <FloatingPetal delay={3.5} duration={9} size={15} top={10} />
-         <FloatingPetal delay={0.5} duration={5} size={35} top={65} />
+          {/* Increased sizes slightly as images sometimes look smaller than font icons */}
+          <FloatingPetal delay={0} duration={6} size={35} top={20} />
+          <FloatingPetal delay={2} duration={8} size={25} top={80} />
+          <FloatingPetal delay={1} duration={7} size={30} top={50} />
+          <FloatingPetal delay={3.5} duration={9} size={20} top={10} />
+          <FloatingPetal delay={0.5} duration={5} size={40} top={65} />
       </div>
 
       <div className="relative z-10 flex flex-col items-center mt-8">
