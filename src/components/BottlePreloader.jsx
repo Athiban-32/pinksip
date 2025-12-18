@@ -29,20 +29,43 @@ const BottlePreloader = ({ finishLoading }) => {
   return (
     <div className="fixed inset-0 z-[100] bg-pink-50 flex flex-col items-center justify-center overflow-hidden">
       
+      {/* PURE SVG ANIMATIONS */}
       <style>
         {`
-          @keyframes rise-liquid {
-            0% { height: 0%; }
-            100% { height: 75%; } 
+          /* Animate the Liquid Rect from bottom (y=200) to top (y=50) */
+          @keyframes fill-liquid {
+            0% {
+              y: 200;
+              height: 0;
+            }
+            100% {
+              y: 50; /* Stop at the neck of the bottle */
+              height: 150px;
+            }
           }
-          @keyframes surface-wobble {
-            0%, 100% { transform: skewX(0deg); }
-            50% { transform: skewX(-2deg); }
+
+          /* Animate Bubbles rising */
+          @keyframes bubble-rise {
+            0% {
+              transform: translateY(0) scale(0.5);
+              opacity: 0;
+            }
+            20% {
+              opacity: 1;
+            }
+            100% {
+              transform: translateY(-80px) scale(1.2);
+              opacity: 0;
+            }
           }
-          @keyframes speck-rise {
-            0% { transform: translateY(0); opacity: 0; }
-            50% { opacity: 1; }
-            100% { transform: translateY(-50px); opacity: 0; }
+          
+          .liquid-fill {
+            animation: fill-liquid 2.5s cubic-bezier(0.4, 0, 0.2, 1) forwards 0.5s;
+          }
+
+          .bubble {
+            transform-box: fill-box;
+            transform-origin: center;
           }
         `}
       </style>
@@ -69,48 +92,88 @@ const BottlePreloader = ({ finishLoading }) => {
 
           <svg viewBox="0 0 100 200" className="w-full h-full drop-shadow-2xl z-10 relative overflow-visible">
             <defs>
+              {/* Bottle Outline Path */}
               <path id="bottle-shape" d="M 30 5 L 30 35 Q 30 65 10 85 L 10 185 Q 10 200 50 200 Q 90 200 90 185 L 90 85 Q 70 65 70 35 L 70 5 Z" />
               
+              {/* Clipping Path to keep liquid inside */}
               <clipPath id="bottle-clip">
                 <use href="#bottle-shape" />
               </clipPath>
+
+              {/* Gradient for that 3D Liquid look */}
+              <linearGradient id="liquidGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#f472b6" /> {/* pink-400 */}
+                <stop offset="50%" stopColor="#ec4899" /> {/* pink-500 */}
+                <stop offset="100%" stopColor="#db2777" /> {/* pink-600 */}
+              </linearGradient>
+
+              {/* Pattern for specks/texture */}
+              <pattern id="speckPattern" x="0" y="0" width="10" height="10" patternUnits="userSpaceOnUse">
+                <circle cx="2" cy="2" r="1" fill="#881337" opacity="0.2" />
+              </pattern>
             </defs>
 
+            {/* 1. Glass Background (Transparency) */}
             <use href="#bottle-shape" fill="rgba(255,255,255,0.2)" />
 
-            {/* SAFARI FIX APPLIED HERE */}
-            <foreignObject 
-                x="0" 
-                y="0" 
-                width="100" 
-                height="200" 
-                clipPath="url(#bottle-clip)" 
-                style={{ overflow: 'hidden' }} // Ensure overflow is handled on the object itself
-            >
-                {/* IMPORTANT: Safari interprets 100% height incorrectly in foreignObject.
-                   We set explicit height '200px' to match the SVG viewBox (0 0 100 200).
-                   This forces the liquid container to be the full height of the bottle.
+            {/* 2. THE LIQUID GROUP (Clipped to bottle) */}
+            <g clipPath="url(#bottle-clip)">
+                
+                {/* SOLUTION: PURE SVG RECT
+                  Instead of HTML div, we use an SVG rect.
+                  y=200 (bottom), height=0 (empty).
+                  Animation moves it to y=50, height=150.
                 */}
-                <div className="w-full relative" style={{ height: '200px' }}>
-                    <div className="absolute bottom-0 left-0 w-full bg-pink-400"
-                         style={{ animation: 'rise-liquid 2.5s ease-out forwards 0.5s', height: '0%' }}>
-                        
-                        <div className="absolute inset-0 w-full h-full opacity-60"
-                             style={{ backgroundImage: 'radial-gradient(#be185d 1px, transparent 1px)', backgroundSize: '12px 12px' }}></div>
-                        <div className="absolute top-0 left-0 w-full h-2 bg-pink-300 opacity-50 blur-[1px]"
-                             style={{ animation: 'surface-wobble 3s infinite ease-in-out' }}></div>
-                        
-                        <div className="absolute bottom-10 left-4 w-1 h-1 bg-rose-700 rounded-full" style={{ animation: 'speck-rise 4s infinite' }}></div>
-                        <div className="absolute bottom-20 left-12 w-1.5 h-1.5 bg-rose-800 rounded-full" style={{ animation: 'speck-rise 3s infinite 0.5s' }}></div>
-                        <div className="absolute bottom-5 left-16 w-1 h-1 bg-rose-600 rounded-full" style={{ animation: 'speck-rise 5s infinite 1s' }}></div>
-                    </div>
-                </div>
-            </foreignObject>
+                <rect 
+                  x="0" 
+                  y="200" 
+                  width="100" 
+                  height="0" 
+                  fill="url(#liquidGradient)" 
+                  className="liquid-fill"
+                />
 
+                {/* Texture Overlay (Rose particles) */}
+                <rect 
+                  x="0" 
+                  y="200" 
+                  width="100" 
+                  height="0" 
+                  fill="url(#speckPattern)" 
+                  className="liquid-fill"
+                  style={{ opacity: 0.6 }}
+                />
+
+                {/* Bubbles (Native SVG Circles) */}
+                {/* We group them and animate opacity or position */}
+                <g className="liquid-fill" style={{ animationName: 'fade-in', opacity: 0, animationFillMode: 'forwards' }}> 
+                   <circle cx="30" cy="180" r="2" fill="#be185d" className="bubble" style={{ animation: 'bubble-rise 3s infinite ease-in 1s' }} />
+                   <circle cx="60" cy="160" r="3" fill="#9d174d" className="bubble" style={{ animation: 'bubble-rise 4s infinite ease-in 1.5s' }} />
+                   <circle cx="45" cy="190" r="1.5" fill="#be185d" className="bubble" style={{ animation: 'bubble-rise 2.5s infinite ease-in 2s' }} />
+                   <circle cx="70" cy="170" r="2" fill="#be185d" className="bubble" style={{ animation: 'bubble-rise 3.5s infinite ease-in 0.8s' }} />
+                </g>
+
+                {/* Top Surface Line (Simulates the wobble flatly for stability) */}
+                <rect 
+                  x="0" 
+                  y="200" 
+                  width="100" 
+                  height="2" 
+                  fill="#fbcfe8" 
+                  className="liquid-fill" 
+                  style={{ opacity: 0.8 }} 
+                />
+            </g>
+
+            {/* 3. Bottle Highlights & Reflections */}
             <path d="M 15 90 Q 15 120 15 180" fill="none" stroke="white" strokeWidth="2" opacity="0.4" strokeLinecap="round" />
             <path d="M 85 90 Q 85 120 85 180" fill="none" stroke="white" strokeWidth="2" opacity="0.2" strokeLinecap="round" />
             <path d="M 32 10 L 32 30" fill="none" stroke="white" strokeWidth="1.5" opacity="0.5" strokeLinecap="round" />
+            
+            {/* 4. Bottle Outline Border */}
             <use href="#bottle-shape" fill="none" stroke="rgba(255,255,255,0.6)" strokeWidth="3" />
+            
+            {/* 5. Cap Details */}
             <rect x="25" y="2" width="50" height="8" rx="2" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="3" />
             <rect x="25" y="2" width="50" height="8" rx="2" fill="rgba(255,255,255,0.2)" />
           </svg>
