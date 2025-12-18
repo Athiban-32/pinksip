@@ -29,12 +29,11 @@ const BottlePreloader = ({ finishLoading }) => {
   return (
     <div className="fixed inset-0 z-[100] bg-pink-50 flex flex-col items-center justify-center overflow-hidden">
       
-      {/* Ensure Keyframes are available */}
       <style>
         {`
           @keyframes rise-liquid {
             0% { height: 0%; }
-            100% { height: 75%; } /* Filled to neck */
+            100% { height: 75%; } 
           }
           @keyframes surface-wobble {
             0%, 100% { transform: skewX(0deg); }
@@ -71,6 +70,7 @@ const BottlePreloader = ({ finishLoading }) => {
           <svg viewBox="0 0 100 200" className="w-full h-full drop-shadow-2xl z-10 relative overflow-visible">
             <defs>
               <path id="bottle-shape" d="M 30 5 L 30 35 Q 30 65 10 85 L 10 185 Q 10 200 50 200 Q 90 200 90 185 L 90 85 Q 70 65 70 35 L 70 5 Z" />
+              
               <clipPath id="bottle-clip">
                 <use href="#bottle-shape" />
               </clipPath>
@@ -78,32 +78,34 @@ const BottlePreloader = ({ finishLoading }) => {
 
             <use href="#bottle-shape" fill="rgba(255,255,255,0.2)" />
 
-            <g clipPath="url(#bottle-clip)">
-              <foreignObject x="0" y="0" width="100" height="200">
-                {/* SAFARI FIX: 
-                   1. Removed 'flex flex-col justify-end' 
-                   2. Added 'relative' to parent
-                   3. Added 'absolute bottom-0' to child
-                   This forces the liquid to anchor to the bottom in all browsers.
+            {/* SAFARI FIX APPLIED HERE */}
+            <foreignObject 
+                x="0" 
+                y="0" 
+                width="100" 
+                height="200" 
+                clipPath="url(#bottle-clip)" 
+                style={{ overflow: 'hidden' }} // Ensure overflow is handled on the object itself
+            >
+                {/* IMPORTANT: Safari interprets 100% height incorrectly in foreignObject.
+                   We set explicit height '200px' to match the SVG viewBox (0 0 100 200).
+                   This forces the liquid container to be the full height of the bottle.
                 */}
-                <div className="w-full h-full relative">
+                <div className="w-full relative" style={{ height: '200px' }}>
                     <div className="absolute bottom-0 left-0 w-full bg-pink-400"
                          style={{ animation: 'rise-liquid 2.5s ease-out forwards 0.5s', height: '0%' }}>
                         
-                        {/* Inner Details */}
                         <div className="absolute inset-0 w-full h-full opacity-60"
                              style={{ backgroundImage: 'radial-gradient(#be185d 1px, transparent 1px)', backgroundSize: '12px 12px' }}></div>
                         <div className="absolute top-0 left-0 w-full h-2 bg-pink-300 opacity-50 blur-[1px]"
                              style={{ animation: 'surface-wobble 3s infinite ease-in-out' }}></div>
                         
-                        {/* Bubbles */}
                         <div className="absolute bottom-10 left-4 w-1 h-1 bg-rose-700 rounded-full" style={{ animation: 'speck-rise 4s infinite' }}></div>
                         <div className="absolute bottom-20 left-12 w-1.5 h-1.5 bg-rose-800 rounded-full" style={{ animation: 'speck-rise 3s infinite 0.5s' }}></div>
                         <div className="absolute bottom-5 left-16 w-1 h-1 bg-rose-600 rounded-full" style={{ animation: 'speck-rise 5s infinite 1s' }}></div>
                     </div>
                 </div>
-              </foreignObject>
-            </g>
+            </foreignObject>
 
             <path d="M 15 90 Q 15 120 15 180" fill="none" stroke="white" strokeWidth="2" opacity="0.4" strokeLinecap="round" />
             <path d="M 85 90 Q 85 120 85 180" fill="none" stroke="white" strokeWidth="2" opacity="0.2" strokeLinecap="round" />
