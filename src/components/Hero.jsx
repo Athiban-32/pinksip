@@ -103,7 +103,9 @@ const Hero = () => {
   };
 
   return (
-    <section id="home" onMouseMove={handleMouseMove} className="relative min-h-screen flex items-center pt-32 md:pt-48 pb-24 overflow-hidden bg-[#FFF9FA]">
+    // Updated Padding Here: pt-32 (Mobile), md:pt-40 (Laptop), lg:pt-48 (Big Screen)
+    // This graduation ensures navbar clearance without pushing content too deep on laptops
+    <section id="home" onMouseMove={handleMouseMove} className="relative min-h-screen flex items-center pt-20 md:pt-28 lg:pt-39 pb-24 overflow-hidden bg-[#FFF9FA]">
       <style>{animationStyles}</style>
 
       {/* Background Elements */}
