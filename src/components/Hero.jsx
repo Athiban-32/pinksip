@@ -165,7 +165,7 @@ const Hero = () => {
           </div>
 
           {/* IMAGE SECTION */}
-          <div className="flex-1 relative flex justify-center items-center mt-8 md:mt-0">
+          <div className="flex-1 relative flex justify-center items-center mt-8 md:mt-6">
             <div className="absolute w-[350px] h-[350px] md:w-[500px] md:h-[500px] border border-pink-200 rounded-full animate-[spin_40s_linear_infinite]"></div>
             <div className="absolute w-[320px] h-[320px] md:w-[450px] md:h-[450px] border border-dashed border-pink-200 rounded-full animate-[spin_30s_linear_infinite_reverse]"></div>
 
