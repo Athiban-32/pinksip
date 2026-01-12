@@ -190,7 +190,7 @@ const Contact = () => {
               {/* Map Container */}
               <div className="flex-1 bg-white rounded-[2.5rem] overflow-hidden border border-gray-200 shadow-lg relative min-h-[350px]">
                 <iframe 
-                  src="https://maps.google.com/maps?q=2%2F337%2FD6%2C+State+Bank+Colony%2C+Sivakasi+-+626+129&t=&z=15&ie=UTF8&iwloc=&output=embed"
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d62883.09595735833!2d78.12282365!3d9.91783685!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3b00c582b1189633%3A0xdc955b7264f63933!2sMadurai%2C%20Tamil%20Nadu!5e0!3m2!1sen!2sin!4v1768193596373!5m2!1sen!2sin"
                   width="100%" 
                   height="100%" 
                   style={{border:0, opacity: 0.9}} 
@@ -203,7 +203,7 @@ const Contact = () => {
                 </iframe>
                 
                 {/* Custom Floating Location Pin */}
-                <div className="absolute bottom-6 left-6 right-6 bg-white/95 backdrop-blur-md p-5 rounded-2xl shadow-xl border border-white/50">
+                {/* <div className="absolute bottom-6 left-6 right-6 bg-white/95 backdrop-blur-md p-5 rounded-2xl shadow-xl border border-white/50">
                   <div className="flex items-start gap-4">
                      <div className="bg-pink-100 p-3 rounded-full text-pink-600 shrink-0">
                        <MapPin size={24} fill="currentColor" className="opacity-20 text-pink-600" />
@@ -212,11 +212,11 @@ const Contact = () => {
                      <div>
                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Our Location</span>
                        <span className="text-sm font-bold text-gray-900 leading-snug block">
-                         2/337/D6, State Bank Colony, <br/>Sivakasi - 626 129
+                         <br/>Madurai
                        </span>
                      </div>
                   </div>
-                </div>
+                </div> */}
               </div>
 
             </div>

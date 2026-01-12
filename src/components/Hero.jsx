@@ -123,9 +123,12 @@ const Hero = () => {
           {/* TEXT CONTENT */}
           <div className="flex-1 text-center md:text-left space-y-8" style={{ transform: `translate(${mousePos.x * 0.5}px, ${mousePos.y * 0.5}px)` }}>
             
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-pink-50 border border-pink-100 text-pink-900 font-semibold text-xs tracking-widest uppercase">
-              <Star size={12} className="fill-pink-900" /> 
-              <span>Authentic Rosemilk</span>
+            <div className="flex items-center gap-4">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-pink-50 border border-pink-100 text-pink-900 font-semibold text-xs tracking-widest uppercase">
+                <Star size={12} className="fill-pink-900" /> 
+                <span>Authentic Rosemilk</span>
+              </div>
+              <div className="text-[11px] text-pink-800 font-semibold bg-pink-50 px-3 py-1 rounded-md border border-pink-100">FSSAI NO : 30251118122223929</div>
             </div>
 
             <div className="space-y-1">

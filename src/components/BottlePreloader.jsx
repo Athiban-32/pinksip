@@ -85,7 +85,7 @@ const BottlePreloader = ({ finishLoading }) => {
       <div className="relative z-10 flex flex-col items-center mt-8">
         <div className="relative w-[140px] h-[300px]">
           {/* Straw */}
-          <div className="absolute top-[-50px] left-[52%] w-[14px] h-[360px] z-0 rounded-full shadow-sm"
+          <div className="absolute top-[-80px] left-[32%] w-[14px] h-[360px] z-0 rounded-full shadow-sm"
                style={{
                  background: 'repeating-linear-gradient(45deg, #fce7f3, #fce7f3 10px, #ec4899 10px, #ec4899 20px)',
                  boxShadow: 'inset -2px 0 4px rgba(0,0,0,0.1)',

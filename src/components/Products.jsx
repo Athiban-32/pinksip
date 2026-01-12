@@ -6,9 +6,9 @@ const Products = () => {
   const WHATSAPP_NUMBER = "918807869898"; 
 
   const products = [
-    { name: "Mini Sip", size: "200ml", price: "₹60", color: "bg-pink-50" },
-    { name: "The Classic", size: "500ml", price: "₹80", color: "bg-rose-50", tag: "Best Seller" },
-    { name: "Family Pack", size: "1L", price: "₹100", color: "bg-pink-100" }
+    { name: 'Rose milk ice cream', size: '200ml', price: '35/-' },
+    { name: 'Rose Falooda', size: '500ml', price: '65/-' },
+    { name: 'Rose milk cake', size: '1L', price: '115/-' },
   ];
 
   const handleOrder = (productName) => {
